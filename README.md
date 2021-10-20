@@ -1,2 +1,2 @@
 # comp3000-project
-My final year university project
+A placeholder repository for my final year project at University
