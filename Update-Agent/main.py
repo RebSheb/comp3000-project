@@ -31,7 +31,7 @@ def main():
 def read_agent_configuration():
     config = None
     try:
-        configuration_path = "./agent.conf"
+        configuration_path = "./Update-Agent/agent.conf"
         config = configparser.ConfigParser()
         config.read(configuration_path)
     except configparser.Error as err:
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     except Exception as error:
         logging.error(error)
         logging.error(
-            "Linux-Agent cannot recover from this exception, exiting...")
+            "Agent cannot recover from this exception, exiting...")
         sys.exit(-1)
 
     main()
