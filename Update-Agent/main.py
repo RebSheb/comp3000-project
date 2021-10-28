@@ -7,6 +7,17 @@ from polling import Polling
 
 
 def main():
+
+    if sys.platform == "linux":
+        from linux_update_handler import LinuxUpdater as updater
+    elif sys.platform == "win32":
+        from windows_update_handler import WindowsUpdater as updater
+    else:
+        logging.error("Unknown sys.platform! Exiting...")
+        sys.exit(-2)
+
+    update_handler = updater()
+
     while True:
         # In here is where we call functions to do primary
         # agent logic.
@@ -16,14 +27,8 @@ def main():
         # Also have a polling thread created which checks the API to see if any commands
         # to update said package are available.
         logging.info("Updating Apt Cache")
-        # apt_Cache.update()
-        logging.info("Checking for available updates")
-        # pkgs = apt_Cache.open()
-        # for package in pkgs:
-        #    if package.is_upgradable:
-        #        logging.info("Package [{}] is upgradable from version [{}] to [{}]".format(package.name,
-        #         package.installed.version,
-        #         package.candidate.version))
+        update_handler.check_for_updates()
+
         logging.info("Done, waiting 30 seconds...")
         time.sleep(30)
 
