@@ -9,6 +9,7 @@ class LinuxUpdater(UpdateHandler):
         logging.info("Linux Updater instantiated")
 
     def check_for_updates(self):
+        upgradable_pkgs = {}
         logging.info("LinuxUpdater-CheckingForUpdates")
         cache = apt.Cache()
         cache.update()
@@ -18,3 +19,7 @@ class LinuxUpdater(UpdateHandler):
                 logging.info("Package [{}] is upgradable from version [{}] to [{}]".format(pkg.name,
                                                                                            pkg.installed.version,
                                                                                            pkg.candidate.version))
+                upgradable_pkgs[pkg.name] = {
+                    "installed_version": pkg.installed.version, "available_version": pkg.candidate.version}
+
+        print(upgradable_pkgs)
