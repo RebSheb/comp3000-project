@@ -19,7 +19,3 @@ class LinuxUpdater(UpdateHandler):
                 logging.info("Package [{}] is upgradable from version [{}] to [{}]".format(pkg.name,
                                                                                            pkg.installed.version,
                                                                                            pkg.candidate.version))
-                upgradable_pkgs[pkg.name] = {
-                    "installed_version": pkg.installed.version, "available_version": pkg.candidate.version}
-
-        print(upgradable_pkgs)
