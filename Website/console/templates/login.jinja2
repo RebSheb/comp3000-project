@@ -1,0 +1,25 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Devices Dashboard</h5>
+
+                <table class="table">
+                    <thead>
+                        <th scope="col">MAC Address</th>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">IP Address</th>
+                        <th scope="col">Agent Status</th>
+                        <th scope="col">Options</th>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-2"></div>
+</div>
+{% endblock %}
