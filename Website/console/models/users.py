@@ -1,5 +1,5 @@
 from logging import log
-from app import db, bcrypt
+from ..app import db, bcrypt
 from flask_login import UserMixin
 import datetime
 
@@ -8,7 +8,7 @@ class User(db.Model, UserMixin):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(512), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
