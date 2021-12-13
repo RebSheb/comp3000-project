@@ -6,17 +6,25 @@
     <div class="col-8">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Devices Dashboard</h5>
-
-                <table class="table">
-                    <thead>
-                        <th scope="col">MAC Address</th>
-                        <th scope="col">Hostname</th>
-                        <th scope="col">IP Address</th>
-                        <th scope="col">Agent Status</th>
-                        <th scope="col">Options</th>
-                    </thead>
-                </table>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+                {% endwith %}
+                <h5 class="card-title">Login</h5>
+                <form action="{{url_for('do_login')}}" method="post">
+                    <div class="form-group">
+                        <label for="inputUsername">Username</label>
+                        <input name="username" type="text" class="form-control" id="inputUsername">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Password</label>
+                        <input name="password" type="password" class="form-control" id="inputPassword">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
             </div>
         </div>
     </div>
