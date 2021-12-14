@@ -42,6 +42,12 @@ def load_user(user_id):
 def unauthorized_callback():
     return redirect("/login")
 
+#@app.before_first_request
+#def create_test_user():
+#    user = User("testtest", "cheese")
+#    db.session.add(user)
+#    db.session.commit()
+
 
 @app.route("/login", methods=["GET"])
 def login():
@@ -49,18 +55,23 @@ def login():
 
 @app.route("/login", methods=["POST"])
 def do_login():
-    print(request.form["username"])
-    print(request.form["password"])
-    user = User.query.filter_by(username=request.form["username"]).first()
+    try:
+        user = User.query.filter_by(username=request.form["username"]).first()
 
-    if user is None:
-        flash("Please check your username / password!")
+        if user is None:
+            flash("Please check your username / password!")
+            return redirect(url_for("login"))
+
+        if flask_login.login_user(user):
+            print("Successfully logged in {}".format(user.username))
+            return redirect(url_for("authenticated.home"))
+
+    except KeyError as err:
+        flash("Please enter login details!")
         return redirect(url_for("login"))
-
-    flask_login.login_user(user)
-    return ""
     
 
 @app.route("/register")
 def register():
     return render_template("register.jinja2")
+
