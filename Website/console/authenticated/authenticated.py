@@ -12,6 +12,7 @@ auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 @auth_bp.route("/")
 @login_required
 def home():
+    clients = []
     try:
         target_ip = "192.168.1.1/24"
         arp = ARP(pdst=target_ip)
