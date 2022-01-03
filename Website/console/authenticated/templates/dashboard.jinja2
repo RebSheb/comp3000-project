@@ -16,6 +16,18 @@
                         <th scope="col">Agent Status</th>
                         <th scope="col">Options</th>
                     </thead>
+
+                    <tbody>
+                        <tr>
+                            {% for device in devices %}
+                            <td>{{device["mac"]}}</td>
+                            <td>NYI</td>
+                            <td>{{device["ip"]}}</td>
+                            <td>NYI</td>
+                            <td>NYI</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
