@@ -1,4 +1,5 @@
 
+
 import flask_login
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import redirect
@@ -8,6 +9,7 @@ from flask import request, flash, url_for
 from flask_login import LoginManager
 from flask_login.utils import login_required
 from flask_bcrypt import Bcrypt
+
 
 # Intial Flask App Creation
 app = Flask(__name__)
@@ -20,7 +22,6 @@ bcrypt = Bcrypt(app)
 
 # Import our DB Models
 from .models.users import User
-
 # Load our Blueprints
 app.register_blueprint(auth_bp)
 
@@ -38,6 +39,7 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect("/login")
@@ -52,6 +54,7 @@ def unauthorized_callback():
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.jinja2")
+
 
 @app.route("/login", methods=["POST"])
 def do_login():
@@ -69,9 +72,8 @@ def do_login():
     except KeyError as err:
         flash("Please enter login details!")
         return redirect(url_for("login"))
-    
+
 
 @app.route("/register")
 def register():
     return render_template("register.jinja2")
-
