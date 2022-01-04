@@ -17,9 +17,10 @@ class Device(db.Model):
     updated_at = db.Column(DateTime, nullable=False,
                            default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    def __init__(self, mac_address, ipv4_address) -> None:
+    def __init__(self, mac_address, ipv4_address, hostname) -> None:
         self.mac_address = mac_address
         self.ip_address = ipv4_address
+        self.hostname = hostname
         return
 
     def __repr__(self):
