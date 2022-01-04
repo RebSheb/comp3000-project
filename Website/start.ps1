@@ -1,3 +1,4 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\environment\bin\Activate.ps1
 
 pip3 install -r requirements.txt
