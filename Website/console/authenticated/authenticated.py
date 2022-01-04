@@ -9,6 +9,7 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
+from console.models import Device
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -16,9 +17,14 @@ auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 @auth_bp.route("/")
 @login_required
 def home():
-    clients = network_scan()
+    devices = network_scan()
+    for device in devices:
+        print("[Looking at] {} : {} : {}".format(
+            device["mac"], device["ip"], device["hostname"]))
+        new_device = Device(device["mac"], device["ip"], device["hostname"])
+        print(db.session.query(new_device))
 
-    return render_template("dashboard.jinja2", devices=clients)
+    return render_template("dashboard.jinja2", devices=devices)
 
 
 @auth_bp.route("/about")
