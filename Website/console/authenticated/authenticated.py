@@ -1,3 +1,5 @@
+from datetime import date
+import datetime
 from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
@@ -19,10 +21,18 @@ auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 def home():
     devices = network_scan()
     for device in devices:
-        print("[Looking at] {} : {} : {}".format(
-            device["mac"], device["ip"], device["hostname"]))
+        #print("[Looking at] {} : {} : {}".format(
+        #   device["mac"], device["ip"], device["hostname"]))
         new_device = Device(device["mac"], device["ip"], device["hostname"])
-        print(db.session.query(new_device))
+        if Device.query.filter_by(mac_address=device["mac"]).first() == None:
+            db.session.add(new_device)
+        else:
+            existing_device = Device.query.get(device["mac"])
+            #print("[{}] Last Seen: {} -> {}".format(existing_device.mac_address, existing_device.last_seen, datetime.datetime.utcnow()))
+            existing_device.last_seen = datetime.datetime.utcnow()
+            
+
+    db.session.commit()
 
     return render_template("dashboard.jinja2", devices=devices)
 
