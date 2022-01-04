@@ -16,6 +16,25 @@ auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 @auth_bp.route("/")
 @login_required
 def home():
+    clients = network_scan()
+
+    return render_template("dashboard.jinja2", devices=clients)
+
+
+@auth_bp.route("/about")
+@login_required
+def about():
+    return render_template("about.jinja2")
+
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/login")
+
+
+def network_scan():
     clients = []
     try:
         target_ip = app.config["IP_RANGE"]
@@ -40,17 +59,4 @@ def home():
     except PermissionError as err:
         flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
 
-    return render_template("dashboard.jinja2", devices=clients)
-
-
-@auth_bp.route("/about")
-@login_required
-def about():
-    return render_template("about.jinja2")
-
-
-@auth_bp.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect("/login")
+    return clients
