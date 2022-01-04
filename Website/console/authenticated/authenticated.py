@@ -41,7 +41,7 @@ def network_scan():
         arp = ARP(pdst=target_ip)
         ether = Ether(dst="ff:ff:ff:ff:ff:ff")
         packet = ether/arp
-        result = srp(packet, timeout=3)[0]
+        result = srp(packet, timeout=1)[0]
         clients = []
         for sent, received in result:
             try:
