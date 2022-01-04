@@ -25,7 +25,7 @@ def home():
             try:
                 hostname = ""
                 (hostname, alias, ip) = gethostbyaddr(received.psrc)
-            except socket.herror:
+            except herror:
                 hostname = "Unknown Hostname"
             finally:
                 clients.append(
