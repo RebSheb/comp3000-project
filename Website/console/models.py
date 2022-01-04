@@ -6,8 +6,10 @@ import datetime
 
 class Device(db.Model):
 
-    mac_address = db.Column(db.Integer, primary_key=True)
+    __tablename__ = "devices"
+    mac_address = db.Column(db.String(17), primary_key=True)
     ipv4_address = db.Column(db.String(15), nullable=False)
+    hostname = db.Column(db.String(255), nullable=False)
     last_seen = db.Column(DateTime, nullable=False,
                           default=datetime.datetime.utcnow)
     first_seen = db.Column(DateTime, nullable=False,
