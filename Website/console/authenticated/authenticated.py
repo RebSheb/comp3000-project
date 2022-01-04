@@ -2,7 +2,8 @@ from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
-from console import app
+
+from ...app import app
 
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
