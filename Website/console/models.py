@@ -6,8 +6,10 @@ import datetime
 
 class Device(db.Model):
 
-    mac_address = db.Column(db.Integer, primary_key=True)
+    __tablename__ = "devices"
+    mac_address = db.Column(db.String(17), primary_key=True)
     ipv4_address = db.Column(db.String(15), nullable=False)
+    hostname = db.Column(db.String(255), nullable=False)
     last_seen = db.Column(DateTime, nullable=False,
                           default=datetime.datetime.utcnow)
     first_seen = db.Column(DateTime, nullable=False,
@@ -15,9 +17,10 @@ class Device(db.Model):
     updated_at = db.Column(DateTime, nullable=False,
                            default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    def __init__(self, mac_address, ipv4_address) -> None:
+    def __init__(self, mac_address, ipv4_address, hostname) -> None:
         self.mac_address = mac_address
-        self.ip_address = ipv4_address
+        self.ipv4_address = ipv4_address
+        self.hostname = hostname
         return
 
     def __repr__(self):
