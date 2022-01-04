@@ -17,7 +17,7 @@ from console.models import Device
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
 mac = MacLookup()
-mac.update_vendors()
+#mac.update_vendors()
 
 
 @auth_bp.route("/")
@@ -25,7 +25,7 @@ mac.update_vendors()
 def home():
     devices = network_scan()
     for device in devices:
-        # print("[Looking at] {} : {} : {}".format(
+        #print("[Looking at] {} : {} : {}".format(
         #   device["mac"], device["ip"], device["hostname"]))
         new_device = Device(device["mac"], device["ip"], device["hostname"])
         if Device.query.filter_by(mac_address=device["mac"]).first() == None:
@@ -34,7 +34,10 @@ def home():
             existing_device = Device.query.get(device["mac"])
             #print("[{}] Last Seen: {} -> {}".format(existing_device.mac_address, existing_device.last_seen, datetime.datetime.utcnow()))
             existing_device.last_seen = datetime.datetime.utcnow()
-        device["tooltip"] = mac.lookup(device["mac"])
+        try:
+            device["tooltip"] = mac.lookup(device["mac"])
+        except KeyError:
+            device["tooltip"] = "Unknown Vendor"
 
     db.session.commit()
 
