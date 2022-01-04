@@ -1,9 +1,7 @@
-from flask import render_template, Blueprint, flash
+from flask import render_template, Blueprint, flash, current_app
 from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
-
-from ...app import app
 
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
@@ -11,15 +9,13 @@ from socket import gethostbyaddr
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
-IP_RANGE = app.config["IP_RANGE"]
-
 
 @auth_bp.route("/")
 @login_required
 def home():
     clients = []
     try:
-        target_ip = IP_RANGE
+        target_ip = current_app.config["IP_RANGE"]
         arp = ARP(pdst=target_ip)
         ether = Ether(dst="ff:ff:ff:ff:ff:ff")
         packet = ether/arp
