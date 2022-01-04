@@ -19,7 +19,7 @@ class Device(db.Model):
 
     def __init__(self, mac_address, ipv4_address, hostname) -> None:
         self.mac_address = mac_address
-        self.ip_address = ipv4_address
+        self.ipv4_address = ipv4_address
         self.hostname = hostname
         return
 
