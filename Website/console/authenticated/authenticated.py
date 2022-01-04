@@ -5,7 +5,7 @@ from werkzeug.utils import redirect
 
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
-from socket import gethostbyaddr
+from socket import gethostbyaddr, herror
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -22,9 +22,14 @@ def home():
         result = srp(packet, timeout=3)[0]
         clients = []
         for sent, received in result:
-            (hostname, alias, ip) = gethostbyaddr(received.psrc)
-            clients.append(
-                {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
+            try:
+                hostname = ""
+                (hostname, alias, ip) = gethostbyaddr(received.psrc)
+            except socket.herror:
+                hostname = "Unknown Hostname"
+            finally:
+                clients.append(
+                    {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
     except PermissionError as err:
         flash("A PermissionError error occurred in LANMan! Is it running ")
 
