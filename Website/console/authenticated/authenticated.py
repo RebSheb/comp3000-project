@@ -4,6 +4,7 @@ from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
+from mac_vendor_lookup import MacLookup
 
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
@@ -15,13 +16,16 @@ from console.models import Device
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
+mac = MacLookup()
+mac.update_vendors()
+
 
 @auth_bp.route("/")
 @login_required
 def home():
     devices = network_scan()
     for device in devices:
-        #print("[Looking at] {} : {} : {}".format(
+        # print("[Looking at] {} : {} : {}".format(
         #   device["mac"], device["ip"], device["hostname"]))
         new_device = Device(device["mac"], device["ip"], device["hostname"])
         if Device.query.filter_by(mac_address=device["mac"]).first() == None:
@@ -30,7 +34,7 @@ def home():
             existing_device = Device.query.get(device["mac"])
             #print("[{}] Last Seen: {} -> {}".format(existing_device.mac_address, existing_device.last_seen, datetime.datetime.utcnow()))
             existing_device.last_seen = datetime.datetime.utcnow()
-            
+        device["tooltip"] = mac.lookup(device["mac"])
 
     db.session.commit()
 
