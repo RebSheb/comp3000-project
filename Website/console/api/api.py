@@ -5,4 +5,3 @@ from werkzeug.utils import redirect
 
 api_bp = Blueprint("api_bp", __name__)
 
-# https://github.com/bwaldvogel/neighbourhood/blob/master/neighbourhood.py
