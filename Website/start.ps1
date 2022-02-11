@@ -1,9 +1,9 @@
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-.\environment\bin\Activate.ps1
+#Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+#.\environment\bin\Activate.ps1
 
-pip3 install -r requirements.txt
+python -m pip install -r requirements.txt
 
-$Env:FLASK_APP = console:create_app
-$Env:FLASK_ENV = development
+$env:FLASK_APP = "console:create_app"
+$env:FLASK_ENV = "development"
 
-flask run
+python -m flask run
