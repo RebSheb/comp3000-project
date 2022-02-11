@@ -50,9 +50,10 @@ class User(UserMixin, db.Model):
     def is_anonymous(self):
         return False
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, name):
         self.username = username
         self.password = bcrypt.generate_password_hash(password, 12)
+        self.name = name
         self.registered_on = datetime.datetime.now()
 
     def __repr__(self):

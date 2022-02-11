@@ -42,14 +42,14 @@ def create_app():
     def unauthorized_callback():
         return redirect("/login")
 
-    @app.before_first_request
-    def create_test_user():
-        try:
-            user = models.User("testtest", "cheese")
-            db.session.add(user)
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            return
+    #@app.before_first_request
+    #def create_test_user():
+    #    try:
+    #        user = models.User("testtest", "cheese", "Test User")
+    #        db.session.add(user)
+    #        db.session.commit()
+    #    except Exception:
+    #        db.session.rollback()
+    #        return
 
     return app
