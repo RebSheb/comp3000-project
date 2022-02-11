@@ -1,7 +1,7 @@
 
 from flask import render_template, request, redirect, flash, url_for
 from flask_login import login_user
-from console import app
+from console import app, db
 from console.models import User
 
 
@@ -28,6 +28,23 @@ def do_login():
         return redirect(url_for("login"))
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET"])
 def register():
     return render_template("register.jinja2")
+
+@app.route("/register", methods=["POST"])
+def do_register():
+    try:
+        username = request.form["username"]
+        password = request.form["password"]
+        name = request.form["name"]
+        print("Registering {}".format(username))
+        user = User(username, password,)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for("login"))
+    except Exception as err:
+        print(err)
+        db.session.rollback()
+        flash("An error occurred whilst trying to register you!")
+        return redirect(url_for("register"))
