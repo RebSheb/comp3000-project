@@ -1,7 +1,7 @@
 
 from flask import render_template, request, redirect, flash, url_for
 from flask_login import login_user
-from console import app, db
+from console import app, db, bcrypt
 from console.models import User
 
 
@@ -15,11 +15,11 @@ def do_login():
     try:
         user = User.query.filter_by(username=request.form["username"]).first()
 
-        if user is None:
+        if user is None or not bcrypt.check_password_hash(user.password, request.form["password"]):
             flash("Please check your username / password!")
             return redirect(url_for("login"))
 
-        if login_user(user):
+        if user and login_user(user):
             print("Successfully logged in {}".format(user.username))
             return redirect(url_for("authenticated.home"))
 
@@ -38,8 +38,8 @@ def do_register():
         username = request.form["username"]
         password = request.form["password"]
         name = request.form["name"]
-        print("Registering {}".format(username))
-        user = User(username, password,)
+        print("Registering {}:{}".format(username, name))
+        user = User(username, password, name)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for("login"))
