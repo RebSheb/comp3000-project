@@ -36,7 +36,7 @@ def main():
 def read_agent_configuration():
     config = None
     try:
-        configuration_path = "./Update-Agent/agent.conf"
+        configuration_path = "./agent.conf"
         config = configparser.ConfigParser()
         config.read(configuration_path)
     except configparser.Error as err:
