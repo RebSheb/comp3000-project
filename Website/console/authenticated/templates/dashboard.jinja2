@@ -25,15 +25,15 @@
                     </thead>
 
                     <tbody>
+                        {% for device in devices %}
                         <tr>
-                            {% for device in devices %}
-                            <td>{{device["mac"]}}</td>
-                            <td>NYI</td>
+                            <td data-toggle="tooltip" data-placement="top" title='{{device["tooltip"]}}'>{{device["mac"]}}</td>
+                            <td>{{device["hostname"]}}</td>
                             <td>{{device["ip"]}}</td>
                             <td>NYI</td>
                             <td>NYI</td>
-                            {% endfor %}
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

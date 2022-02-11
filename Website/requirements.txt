@@ -3,3 +3,4 @@ flask_login
 flask_sqlalchemy
 flask_bcrypt
 scapy
+mac_vendor_lookup
