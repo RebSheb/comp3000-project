@@ -36,7 +36,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(32), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
-    registered_on = db.Column(db.DateTime, nullable=False)
+    registered_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     @property
     def is_active(self):
@@ -58,3 +58,19 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return "<User {}>".format(self.username)
+
+
+class DeviceUpdateDetails(db.Model):
+    __tablename__ = "device_update_details"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mac_address = db.Column(db.String(17), db.ForeignKey("devices.mac_address"), nullable=False)
+    package_name = db.Column(db.String(128), nullable=False)
+    installed_version = db.Column(db.String(64), nullable=False)
+    latest_version = db.Column(db.String(64), nullable=False)
+    description = db.Column(db.String(1024), nullable=True) # Only applicable to Windows systems.
+
+    first_seen = db.Column(DateTime, nullable=False,
+                           default=datetime.datetime.utcnow)
+    updated_at = db.Column(DateTime, nullable=False,
+                           default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
