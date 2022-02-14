@@ -6,7 +6,7 @@ import sys
 from polling import Polling
 
 
-def main():
+def main(config):
 
     if sys.platform == "linux":
         from linux_update_handler import LinuxUpdater as updater
@@ -16,7 +16,7 @@ def main():
         logging.error("Unknown sys.platform! Exiting...")
         sys.exit(-2)
 
-    update_handler = updater()
+    update_handler = updater(config["AGENT"]["API_ENDPOINT"], config["AGENT"]["API_PORT"])
 
     while True:
         # In here is where we call functions to do primary
@@ -26,7 +26,7 @@ def main():
         # if upgradable, add it to a list which will be compiled and shipped to API
         # Also have a polling thread created which checks the API to see if any commands
         # to update said package are available.
-        logging.info("Updating Apt Cache")
+        #logging.info("Updating Apt Cache")
         update_handler.check_for_updates()
 
         logging.info("Done, waiting 30 seconds...")
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     config = read_agent_configuration()
     try:
         if config is not None:
-            create_poller_thread(config["POLLER"]["API_ENDPOINT"], int(
+            create_poller_thread(config["AGENT"]["API_ENDPOINT"], int(
                 config["POLLER"]["FREQUENCY"]))
         else:
             logging.error(
@@ -77,4 +77,4 @@ if __name__ == "__main__":
             "Agent cannot recover from this exception, exiting...")
         sys.exit(-1)
 
-    main()
+    main(config)
