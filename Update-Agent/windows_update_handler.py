@@ -1,18 +1,32 @@
 import logging
 from re import sub
+from typing import Text
+
+from sqlalchemy import true
 from base_classes import UpdateHandler
 import subprocess
 import sys
 
 class WindowsUpdater(UpdateHandler):
-    def __init__(self):
-        super()
+    def __init__(self, api_endpoint, api_port):
+        super().__init__(api_endpoint, api_port)
         logging.info("Windows Updater instantiated")
+
 
     def check_for_updates(self):
         logging.info("WindowsUpdater-CheckingForUpdates")
-        p = subprocess.Popen(["powershell.exe", "$UpdateSession = New-Object -ComObject Microsoft.Update.Session; $UpdateSearcher = $UpdateSession.CreateupdateSearcher(); $Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=0').Updates); $Updates | Select-Object Title"], stdout=sys.stdout)
-        p.communicate()
-        print(p)
+        p = subprocess.Popen(["powershell.exe", "$UpdateSession = New-Object -ComObject Microsoft.Update.Session; $UpdateSearcher = $UpdateSession.CreateupdateSearcher(); $Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=0').Updates); $Updates | ForEach-Object -Begin $null -Process { $_.Title ; $_.Description ; $_.KBArticleIDs }"], stdout=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = p.communicate()
+        stdout = stdout.strip("\r").split("\n") # Remove Windows return carriages and split into a list from \n's
+        stdout = stdout[:-1] # Remove the erronous newline which Powershell seems to enjoy putting in
+        composite_list = [stdout[x:x+3] for x in range(0, len(stdout),3)] # Split every 3rd element so we get a list of lists for each update
+        
+        post_data = []
+        for update in composite_list:
+            post_data.append({
+                "PkgName": update[0],
+                "PkgDescription": update[1],
+                "PkgLatest": update[2]
+            })
 
-
+        self.post_data(post_data)
