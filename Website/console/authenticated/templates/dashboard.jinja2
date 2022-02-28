@@ -32,7 +32,11 @@
                             <td>{{device["ip"]}}</td>
                             <td>{{device["has_agent"]}}</td>
                             <td>
+                                {% if device["has_agent"] == "Installed" %}
                                 <a href="{{url_for('authenticated.view_packages', mac=device['mac'])}}" role="button" class="btn btn-primary">Packages</a>
+                                {% else %}
+                                No Options Available
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
