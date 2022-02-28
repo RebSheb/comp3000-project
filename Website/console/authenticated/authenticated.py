@@ -1,5 +1,6 @@
 from datetime import date
 import datetime
+from platform import mac_ver
 from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
@@ -12,12 +13,12 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
-from console.models import Device
+from console.models import Device, DeviceUpdateDetails
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
 mac = MacLookup()
-#mac.update_vendors()
+# mac.update_vendors()
 
 
 @auth_bp.route("/")
@@ -25,15 +26,24 @@ mac = MacLookup()
 def home():
     devices = network_scan()
     for device in devices:
-        #print("[Looking at] {} : {} : {}".format(
+        # print("[Looking at] {} : {} : {}".format(
         #   device["mac"], device["ip"], device["hostname"]))
         new_device = Device(device["mac"], device["ip"], device["hostname"])
         if Device.query.filter_by(mac_address=device["mac"]).first() == None:
             db.session.add(new_device)
         else:
             existing_device = Device.query.get(device["mac"])
-            #print("[{}] Last Seen: {} -> {}".format(existing_device.mac_address, existing_device.last_seen, datetime.datetime.utcnow()))
+            # print("[{}] Last Seen: {} -> {}".format(existing_device.mac_address, existing_device.last_seen, datetime.datetime.utcnow()))
             existing_device.last_seen = datetime.datetime.utcnow()
+
+        # To check if an agent is installed, we can simply perform a basic query against the deviceupdates table and check if an entry exists
+        has_agent = DeviceUpdateDetails.query.filter_by(
+            mac_address=device["mac"]).first()
+        if has_agent:
+            device["has_agent"] = "Installed"
+        else:
+            device["has_agent"] = "Not Available"
+
         try:
             device["tooltip"] = mac.lookup(device["mac"])
         except KeyError:
@@ -55,6 +65,19 @@ def about():
 def logout():
     logout_user()
     return redirect("/login")
+
+
+@auth_bp.route("/agent/<mac>/packages")
+@login_required
+def view_packages(mac):
+    if mac != None:
+        packages = DeviceUpdateDetails.query.filter(
+            DeviceUpdateDetails.mac_address.like(mac)).all()
+        if packages != None and len(packages) > 0:
+            return render_template('packages.jinja2', mac=mac, packages=packages)
+
+    flash("An error ocurred looking up that MAC")
+    return render_template('packages.jinja2')
 
 
 def network_scan():
