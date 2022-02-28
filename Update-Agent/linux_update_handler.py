@@ -1,6 +1,7 @@
 from base_classes import UpdateHandler
 import logging
 import apt
+import netifaces
 
 
 class LinuxUpdater(UpdateHandler):
@@ -21,5 +22,10 @@ class LinuxUpdater(UpdateHandler):
                                                                                            pkg.candidate.version))
                 upgradable_pkgs.append(
                     {"PkgName": pkg.name, "PkgVersion": pkg.installed.version, "PkgLatest": pkg.candidate.version})
+            else:
+                if pkg != None and pkg.installed != None:
+                    upgradable_pkgs.append(
+                        {"PkgName": pkg.name, "PkgVersion": pkg.installed.version, "PkgLatest": "None"})
 
-        self.post_data(upgradable_pkgs)
+        mac = netifaces.ifaddresses("eth0")[netifaces.AF_LINK][0]["addr"]
+        self.post_data(mac, upgradable_pkgs)
