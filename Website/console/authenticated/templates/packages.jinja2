@@ -1,0 +1,40 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <div class="card">
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ messages[0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <h5 class="card-title">Packages for {{mac}}<h5>
+
+                <table id="package_table" class="table table-striped">
+                    <thead>
+                        <th scope="col">Package Name</th>
+                        <th scope="col">Version</th>
+                        <th scope="col">Latest Version</th>
+                    </thead>
+
+                    <tbody>
+                        {% for package in packages %}
+                        <tr>
+                            <td>{{package.package_name}}</td>
+                            <td>{{package.installed_version}}</td>
+                            <td>{{package.latest_version}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+{% endblock %}
