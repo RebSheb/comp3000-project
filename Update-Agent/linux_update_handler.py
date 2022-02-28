@@ -4,8 +4,8 @@ import apt
 
 
 class LinuxUpdater(UpdateHandler):
-    def __init__(self):
-        super()
+    def __init__(self, api_endpoint, api_port):
+        super().__init__(api_endpoint, api_port)
         logging.info("Linux Updater instantiated")
 
     def check_for_updates(self):
