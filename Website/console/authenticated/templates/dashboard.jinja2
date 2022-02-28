@@ -30,8 +30,10 @@
                             <td data-toggle="tooltip" data-placement="top" title='{{device["tooltip"]}}'>{{device["mac"]}}</td>
                             <td>{{device["hostname"]}}</td>
                             <td>{{device["ip"]}}</td>
-                            <td>NYI</td>
-                            <td>NYI</td>
+                            <td>{{device["has_agent"]}}</td>
+                            <td>
+                                <a href="{{url_for('authenticated.view_packages', mac=device['mac'])}}" role="button" class="btn btn-primary">Packages</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
