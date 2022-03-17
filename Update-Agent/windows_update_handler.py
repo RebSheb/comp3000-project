@@ -48,6 +48,13 @@ class WindowsUpdater(UpdateHandler):
         installed_apps = subprocess.check_output(["powershell.exe", "foreach($pkg in (Get-WmiObject -Class Win32_Product | Select-Object Name,Version)) { if ($pkg.Name) {$pkg.Name + ',' +  $pkg.Version} }"], universal_newlines=True)
         installed_apps = installed_apps.split("\n")[:-1]
         
-        
+        app_data = []
+        for app in installed_apps:
+            app_info = app.split(",")
+            app_data.append({
+                "PkgName": app_info[0],
+                "PkgDescription": "",
+                "PkgVersion": app_data[1]
+            })
 
-        return
+        return app_data
