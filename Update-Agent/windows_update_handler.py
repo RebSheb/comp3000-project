@@ -45,6 +45,9 @@ class WindowsUpdater(UpdateHandler):
         self.post_data(mac, post_data)
 
     def enumerate_installed_applications(self):
-        eap = subprocess.check_output(["powershell.exe", "$UpdateSession = New-Object -ComObject Microsoft.Update.Session; $UpdateSearcher = $UpdateSession.CreateupdateSearcher(); $Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=0').Updates); $Updates | ForEach-Object -Begin $null -Process { $_.Title ; $_.Description ; $_.KBArticleIDs }"], universal_newlines=True)
+        installed_apps = subprocess.check_output(["powershell.exe", "foreach($pkg in (Get-WmiObject -Class Win32_Product | Select-Object Name,Version)) { if ($pkg.Name) {$pkg.Name + ',' +  $pkg.Version} }"], universal_newlines=True)
+        installed_apps = installed_apps.split("\n")[:-1]
+        
+        
 
         return
