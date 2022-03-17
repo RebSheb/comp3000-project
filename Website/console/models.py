@@ -83,3 +83,12 @@ class DeviceUpdateDetails(db.Model):
         self.installed_version = pkgVersion
         self.latest_version = pkgLatest
         self.mac_address = mac_address
+
+class WindowsUpdateInformation(db.Model):
+    __tablename__ = "windows_update_details"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mac_address = db.Column(db.String(17), db.ForeignKey(
+        "devices.mac_address"), nullable=False)
+    update_name = db.Column(db.String(128), nullable=False)
+    update_kb = db.Column(db.String(64), nullable=True)
