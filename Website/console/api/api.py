@@ -16,13 +16,13 @@ def do_post_data():
     try:
         for pkg in post_data["data"]:
             existing_update_details = DeviceUpdateDetails.query.filter_by(
-                mac_address=post_data["mac_address"],
+                mac_address=post_data["mac_address"].lower(),
                 package_name=pkg["PkgName"]
             ).first()
 
             if existing_update_details == None:  # Our mac_address and pkgName combo doesn't exist, let's add it
                 new_device_updates = DeviceUpdateDetails(
-                    mac_address=post_data["mac_address"], pkgName=pkg["PkgName"],
+                    mac_address=post_data["mac_address"].lower(), pkgName=pkg["PkgName"],
                     pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"])
                 # Windows check
                 if "PkgDescription" in pkg.keys():
