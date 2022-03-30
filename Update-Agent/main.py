@@ -16,20 +16,16 @@ def main(config):
         logging.error("Unknown sys.platform! Exiting...")
         sys.exit(-2)
 
-    update_handler = updater(config["AGENT"]["API_ENDPOINT"], config["AGENT"]["API_PORT"])
+    update_handler = updater(
+        config["AGENT"]["API_ENDPOINT"], config["AGENT"]["API_PORT"])
+
+    create_poller_thread(config["AGENT"]["API_ENDPOINT"], int(
+        config["POLLER"]["FREQUENCY"]), update_handler)
 
     while True:
-        # In here is where we call functions to do primary
-        # agent logic.
-        # We need to keep an updated list of installed packages
-        # And inside each installed package we should check the 'is_upgradable' flag
-        # if upgradable, add it to a list which will be compiled and shipped to API
-        # Also have a polling thread created which checks the API to see if any commands
-        # to update said package are available.
-        #logging.info("Updating Apt Cache")
         update_handler.check_for_updates()
 
-        logging.info("Done, waiting 30 seconds...")
+        logging.info("Done checking for updates, waiting 30 seconds...")
         time.sleep(30)
 
 
@@ -47,7 +43,7 @@ def read_agent_configuration():
 
 
 def create_poller_thread(poller_endpoint: str, frequency: int):
-    polling_thread = Polling(poller_endpoint, frequency)
+    polling_thread = Polling(poller_endpoint, frequency,)
     polling_thread.daemon = True  # Terminate on mainthread death
     polling_thread.start()
     logging.info("Polling thread created successfully")
@@ -64,13 +60,11 @@ if __name__ == "__main__":
 
     config = read_agent_configuration()
     try:
-        if config is not None:
-            create_poller_thread(config["AGENT"]["API_ENDPOINT"], int(
-                config["POLLER"]["FREQUENCY"]))
-        else:
+        if config is None:
             logging.error(
                 "Configuration file 'agent.conf' not available, exiting...")
             sys.exit(-1)
+
     except Exception as error:
         logging.error(error)
         logging.error(
