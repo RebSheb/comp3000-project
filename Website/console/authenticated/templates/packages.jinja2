@@ -13,7 +13,11 @@
                         </div>
                     {% endif %}
                 {% endwith %}
-                <h5 class="card-title">Packages for {{mac}}<h5>
+                <h5 class="card-title">Packages for {{mac}} | {{packages|count}} applications<h5>
+                <p class="card-text">
+                    <button type="button" onclick="postUpdateCommand()" class="btn btn-success">Update Machine</button>
+                </p>
+
 
                 <table id="package_table" class="table table-striped">
                     <thead>
@@ -36,5 +40,17 @@
         </div>
     </div>
     <div class="col-1"></div>
+    <script>
+        function postUpdateCommand()
+        {
+            fetch("/agent/{{mac}}/commands", {
+                method: "POST",
+                body: JSON.stringify({"command": "update"}),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => { console.log("Success"); });
+        }
+    </script>
 </div>
 {% endblock %}
