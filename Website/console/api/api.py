@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, request
+from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
@@ -43,9 +43,16 @@ def do_post_data():
 
 @app.route("/agent/<mac>/commands", methods=["GET"])
 def do_get_commands(mac: str):
+    return_data = {"command": "no_command"}
     device_command = DevicePollingCommands.query.filter_by(
         mac_address=mac.lower(), is_read=False).first()
-    print(device_command)
+    if device_command is not None:
+        # We can return a command
+        device_command.is_read = True
+        return_data = {"command": device_command.command}
+
+    db.session.commit()
+    return jsonify(return_data)
 
 
 @app.route("/agent/<mac>/commands", methods=["POST"])
