@@ -18,4 +18,6 @@ class Polling(threading.Thread):
             time.sleep(self.frequency)
 
     def poll_for_command(self):
+        requests.get(self.api_endpoint + "/agents/" +
+                     self.update_handler.mac.lower() + "/commands")
         pass
