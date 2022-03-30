@@ -84,6 +84,7 @@ class DeviceUpdateDetails(db.Model):
         self.latest_version = pkgLatest
         self.mac_address = mac_address
 
+
 class WindowsUpdateInformation(db.Model):
     __tablename__ = "windows_update_details"
 
@@ -92,3 +93,13 @@ class WindowsUpdateInformation(db.Model):
         "devices.mac_address"), nullable=False)
     update_name = db.Column(db.String(128), nullable=False)
     update_kb = db.Column(db.String(64), nullable=True)
+
+
+class DevicePollingCommands(db.Model):
+    __tablename__ = "device_polling_commands"
+
+    command_id = db.Column(db.Integer, primary_key=True)
+    mac_address = db.Column(db.String(17), db.ForeignKey(
+        "devices.mac_address"), nullable=False)
+    command = db.Column(db.String(20), nullable=False)
+    is_read = db.Column(db.Boolean, nullable=False, default=False)
