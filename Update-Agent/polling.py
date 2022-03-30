@@ -1,6 +1,7 @@
 import threading
 import time
 import logging
+import requests
 from base_classes import UpdateHandler
 
 
@@ -15,3 +16,6 @@ class Polling(threading.Thread):
         while True:
             logging.info("Polling for commands...")
             time.sleep(self.frequency)
+
+    def poll_for_command(self):
+        pass
