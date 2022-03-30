@@ -3,7 +3,7 @@ from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
 from console import app, db
-from console.models import DeviceUpdateDetails
+from console.models import DevicePollingCommands, DeviceUpdateDetails
 from sqlalchemy import and_
 import json
 
@@ -39,3 +39,24 @@ def do_post_data():
         print(err)
         return '', 202
     return '', 200
+
+
+@app.route("/agent/<mac>/commands", methods=["GET"])
+def do_get_commands(mac: str):
+    device_command = DevicePollingCommands.query.filter_by(
+        mac_address=mac.lower(), is_read=False).first()
+    print(device_command)
+
+
+@app.route("/agent/<mac>/commands", methods=["POST"])
+def do_post_commands(mac: str):
+    try:
+        post_data = request.json
+        device_command = DevicePollingCommands(
+            mac_address=mac, command=post_data["command"])
+        db.session.add(device_command)
+        db.session.commit()
+    except Exception as err:
+        print("Error occured pushing UPDATE command for {mac}".format(mac))
+        return "", 500
+    return "", 200
