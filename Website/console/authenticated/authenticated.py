@@ -72,7 +72,7 @@ def logout():
 def view_packages(mac):
     if mac != None:
         packages = DeviceUpdateDetails.query.filter(
-            DeviceUpdateDetails.mac_address.like(mac)).all()
+            DeviceUpdateDetails.mac_address.like(mac)).order_by(DeviceUpdateDetails.latest_version.desc()).all()
         if packages != None and len(packages) > 0:
             return render_template('packages.jinja2', mac=mac, packages=packages)
 
