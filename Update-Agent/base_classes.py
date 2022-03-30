@@ -10,8 +10,12 @@ class UpdateHandler():
         logging.info("UpdatedHandler instantiated")
         self.api_endpoint = api_endpoint
         self.api_port = api_port
+        self.mac = None
 
     def check_for_updates(self):
+        pass
+
+    def perform_update(self):
         pass
 
     def post_data(self, mac_address: str = None, data_to_post: list = None):
@@ -24,8 +28,7 @@ class UpdateHandler():
         # [ {"PkgName": "python3", "PkgVersion": "3.9.7", "PkgLatest": "3.9.8"} ]
         # For Windows
         # [ {"PkgName": "Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.359.191.0)", "PkgLatest": "3.9.8", "PkgDescription": "Blah Blah"} ]
-        #mac = get_mac()
-        #mac = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
+        self.mac = mac_address
         data = {
             "mac_address": mac_address,
             "data": data_to_post
