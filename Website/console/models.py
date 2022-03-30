@@ -103,3 +103,7 @@ class DevicePollingCommands(db.Model):
         "devices.mac_address"), nullable=False)
     command = db.Column(db.String(20), nullable=False)
     is_read = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(DateTime, nullable=False,
+                           default=datetime.datetime.utcnow)
+    read_at = db.Column(DateTime, nullable=False,
+                        default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
