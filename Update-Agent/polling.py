@@ -1,12 +1,14 @@
 import threading
 import time
 import logging
+from base_classes import UpdateHandler
 
 
 class Polling(threading.Thread):
-    def __init__(self, api_endpoint: str, frequency: int):
+    def __init__(self, api_endpoint: str, frequency: int, update_handler: UpdateHandler):
         self.api_endpoint = api_endpoint
         self.frequency = frequency
+        self.update_handler = update_handler
         super(Polling, self).__init__()
 
     def run(self):
