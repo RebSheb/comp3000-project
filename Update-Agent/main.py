@@ -3,6 +3,7 @@ import time  # For sleeping
 import logging
 import configparser
 import sys
+from base_classes import UpdateHandler
 from polling import Polling
 
 
@@ -19,7 +20,7 @@ def main(config):
     update_handler = updater(
         config["AGENT"]["API_ENDPOINT"], config["AGENT"]["API_PORT"])
 
-    create_poller_thread(config["AGENT"]["API_ENDPOINT"], int(
+    create_poller_thread(config["AGENT"]["API_ENDPOINT"], config["AGENT"]["API_PORT"], int(
         config["POLLER"]["FREQUENCY"]), update_handler)
 
     while True:
@@ -42,8 +43,9 @@ def read_agent_configuration():
     return config
 
 
-def create_poller_thread(poller_endpoint: str, frequency: int):
-    polling_thread = Polling(poller_endpoint, frequency,)
+def create_poller_thread(poller_endpoint: str, poller_port: int, frequency: int, update_handler: UpdateHandler):
+    polling_thread = Polling(
+        poller_endpoint, poller_port, frequency, update_handler)
     polling_thread.daemon = True  # Terminate on mainthread death
     polling_thread.start()
     logging.info("Polling thread created successfully")
