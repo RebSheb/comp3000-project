@@ -1,0 +1,108 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ messages[0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <h5 class="card-title">Packages for {{host}} ({{mac}}) | {{packages|count}} applications<h5>
+                <p class="card-text">
+                                    
+                    {% if updates >= 1 and updates < 5 %}
+                        <div class="alert alert-warning" role="alert">
+                            {{updates}} 
+                            {% if updates == 1 %} 
+                            application requires
+                            {% else %}
+                            applications require
+                            {%endif%} an update!
+                        </div>
+                    {% elif updates >= 5 %}
+                        <div class="alert alert-danger" role="alert">
+                            {{updates}} applications require an update!
+                        </div>
+                    {% endif %}
+                    <button type="button" onclick="postUpdateCommand()" class="btn btn-success">Update Machine</button>
+                    <a href="{{url_for('authenticated.about')}}" role="button" class="btn btn-primary">Update History</a>
+
+                    <input type="text" id="search_bar" class="form-control" placeholder="Search..." onkeyup="searchPackages()">
+                </p>
+
+                <table id="package_table" class="table table-striped">
+                    <thead>
+                        <th scope="col">Package Name</th>
+                        <th scope="col">Current Version</th>
+                        <th scope="col">Latest Version</th>
+                        <th scope="col">Requires Update?</th>
+                    </thead>
+
+                    <tbody>
+                        {% for package in packages %}
+                        <tr>
+                            <td>{{package.package_name}}</td>
+
+                            {% if package.installed_version == "" or package.installed_version == None %}
+                                <td>N/A</td>
+                                {% else %}
+                                <td>{{package.installed_version}}</td>
+                            {% endif %}
+
+                            {% if package.latest_version == "" %}
+                                <td>{{package.installed_version }}</td>
+                                <td class="text-success">No</td>
+                            {% else %}
+                                <td>{{package.latest_version}}</td>
+                                <td class="text-danger">Yes</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+    <script>
+        function postUpdateCommand()
+        {
+            fetch("/agent/{{mac}}/commands", {
+                method: "POST",
+                body: JSON.stringify({"command": "update"}),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => { console.log("Success"); });
+        }
+
+        function searchPackages() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search_bar");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("package_table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+                }
+            }
+        }
+    </script>
+</div>
+{% endblock %}
