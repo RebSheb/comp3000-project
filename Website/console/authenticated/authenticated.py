@@ -1,9 +1,12 @@
 from datetime import date
 import datetime
+from operator import and_
 from platform import mac_ver
 from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
+import flask_sqlalchemy
+from sqlalchemy import func
 from werkzeug.utils import redirect
 from mac_vendor_lookup import MacLookup
 
@@ -71,10 +74,20 @@ def logout():
 @login_required
 def view_packages(mac):
     if mac != None:
+        device = Device.query.filter(
+            Device.mac_address.like(mac)).first()
+        hostname = device.hostname
+        # packages = DeviceUpdateDetails.query.filter(and_(
+        #    DeviceUpdateDetails.mac_address.like(mac), ~func.coalesce(DeviceUpdateDetails.package_name, None))).order_by(DeviceUpdateDetails.package_name.asc()).all()
         packages = DeviceUpdateDetails.query.filter(
             DeviceUpdateDetails.mac_address.like(mac)).order_by(DeviceUpdateDetails.latest_version.desc()).all()
         if packages != None and len(packages) > 0:
-            return render_template('packages.jinja2', mac=mac, packages=packages)
+            available_to_update = 0
+            for pkg in packages:
+                if len(pkg.latest_version) > 0:
+                    available_to_update = available_to_update + 1
+            print(available_to_update)
+            return render_template('packages.jinja2', mac=mac, host=hostname, packages=packages, pkg_count=(len(packages) - available_to_update), updates=available_to_update)
 
     flash("An error ocurred looking up that MAC")
     return render_template('packages.jinja2')
