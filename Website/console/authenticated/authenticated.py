@@ -60,7 +60,17 @@ def home():
 @auth_bp.route("/about")
 @login_required
 def about():
-    return render_template("about.jinja2")
+    devices = Device.query.filter().all()
+    agents = DeviceUpdateDetails.query.filter().group_by(
+        DeviceUpdateDetails.mac_address).all()
+
+    total_applications = DeviceUpdateDetails.query.filter().all()
+    if total_applications != None and len(total_applications) > 0:
+        available_to_update = 0
+        for pkg in total_applications:
+            if len(pkg.latest_version) > 0:
+                available_to_update = available_to_update + 1
+    return render_template("about.jinja2", number_of_devices=len(devices), ip_range=app.config["IP_RANGE"], number_of_agents=len(agents), total_applications=len(total_applications), available_to_update=available_to_update)
 
 
 @auth_bp.route("/logout")
@@ -86,7 +96,6 @@ def view_packages(mac):
             for pkg in packages:
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
-            print(available_to_update)
             return render_template('packages.jinja2', mac=mac, host=hostname, packages=packages, pkg_count=(len(packages) - available_to_update), updates=available_to_update)
 
     flash("An error ocurred looking up that MAC")
