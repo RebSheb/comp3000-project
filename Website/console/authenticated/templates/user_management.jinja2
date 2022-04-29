@@ -101,7 +101,14 @@
                 body: "",
                 headers: {},
             }).then(res => res.json())
-            .then(data => { console.log("Success " + data.msg); });
+            .then(data => { 
+                showAlert(data.status, "Management", data.msg);
+
+                if(data.status == "failed")
+                {
+                    entry.checked = !entry.checked; // Flip it back if we fail
+                }
+            });
         }
 
         function deleteUser(user_id)
@@ -111,7 +118,9 @@
                 body: "",
                 headers: {},
             }).then(res => res.json())
-            .then(data => { console.log("Success " + data.msg); });
+            .then(data => {
+                showAlert(data.status, "Management", data.msg) 
+            });
         }
     </script>
 </div>
