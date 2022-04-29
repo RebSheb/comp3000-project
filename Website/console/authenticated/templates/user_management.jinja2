@@ -1,0 +1,118 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ messages[0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <h5 class="card-title text-center">User Management Console<h5>
+                <input type="text" id="search_bar" class="form-control" placeholder="Search by Name..." onkeyup="searchUsers()">
+                <div class="card-text">
+                <table id="users_table" class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Username</th>
+                        <th class="text-center" scope="col">Active</th>
+                    </thead>
+
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td><button type="button" data-toggle="modal" data-target="#deleteUserModal" onclick="last_selected_user_id={{user.id}}"><i class="bi bi-trash3"></i></button></td>
+                                <td>{{user.name}}</td>
+                                <td>{{user.username}}</td>
+                                <td class="text-center">
+                                    {% if user.active_account == True %}
+                                        <input id="{{user.id}}" type="checkbox" onclick="updateActiveStatus(this)" checked>
+                                    {% else %}
+                                        <input id="{{user.id}}" type="checkbox" onclick="updateActiveStatus(this)">
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+    
+    <div class="modal fade" id="deleteUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Are you sure?</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- Modal Text -->
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" data-dismiss="modal" onclick="deleteUser(last_selected_user_id)" class="btn btn-danger">Yes, delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var last_selected_user_id = 0
+        function searchUsers() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search_bar");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("users_table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+                }
+            }
+        }
+
+        function updateActiveStatus(entry)
+        {
+            action = "deactivate"
+            if(entry.checked == true)
+            {
+                action = "activate"
+            }
+            fetch("/admin/user/" + entry.id + "/" + action, {
+                method: "POST",
+                body: "",
+                headers: {},
+            }).then(res => res.json())
+            .then(data => { console.log("Success " + data.msg); });
+        }
+
+        function deleteUser(user_id)
+        {
+            fetch("/admin/user/" + user_id + "/delete", {
+                method: "POST",
+                body: "",
+                headers: {},
+            }).then(res => res.json())
+            .then(data => { console.log("Success " + data.msg); });
+        }
+    </script>
+</div>
+{% endblock %}

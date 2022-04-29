@@ -1,8 +1,7 @@
 from datetime import date
 import datetime
-from operator import and_
-from platform import mac_ver
-from flask import render_template, Blueprint, flash
+import json
+from flask import render_template, Blueprint, flash, jsonify
 from flask_login import login_required
 from flask_login.utils import logout_user
 import flask_sqlalchemy
@@ -16,12 +15,12 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
-from console.models import Device, DeviceUpdateDetails
+from console.models import Device, DeviceUpdateDetails, User
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
 mac = MacLookup()
-# mac.update_vendors()
+mac.update_vendors()
 
 
 @auth_bp.route("/")
@@ -128,3 +127,71 @@ def network_scan():
         flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
 
     return clients
+
+
+@auth_bp.route("/admin/users")
+@login_required
+def user_management_console():
+    users = User.query.with_entities(User.id,
+                                     User.username, User.name, User.active_account).all()
+    return render_template("user_management.jinja2", users=users)
+
+
+@auth_bp.route("/admin/user/<user_id>/activate", methods=["POST"])
+@login_required
+def activate_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully activated that user!"}
+    print("[User Management] - Request received to activate user with ID: {}".format(user_id))
+    user = User.query.get(user_id)
+    if user is not None:
+        user.active_account = True
+    else:
+        return_data = {"status": "failed",
+                       "msg": "This user could not be found!"}
+    db.session.commit()
+    return jsonify(return_data)
+
+
+@auth_bp.route("/admin/user/<user_id>/deactivate", methods=["POST"])
+@login_required
+def deactivate_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully deactivated that user!"}
+    print("[User Management - Request received to deactivate user with ID: {}".format(user_id))
+    user = User.query.get(user_id)
+    activated_users = User.query.filter(User.active_account == True).all()
+    if len(activated_users) <= 1:
+        return_data = {"status": "failed",
+                       "msg": "At least one user must remain active at all times!"}
+    else:
+        if user is not None:
+            user.active_account = False
+        else:
+            return_data = {"status": "failed",
+                           "msg": "This user could not be found!"}
+
+    db.session.commit()
+    return jsonify(return_data)
+
+
+@auth_bp.route("/admin/user/<user_id>/delete", methods=["POST"])
+@login_required
+def delete_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully deleted that user!"}
+    print("[User Management] - Request received to delete user with ID: {}".format(user_id))
+    if len(User.query.all()) <= 1:
+        return_data["status"] = "failed"
+        return_data["msg"] = "You cannot delete the last existing user!"
+
+    else:
+        user = User.query.get(user_id)
+        if user is not None:
+            db.session.delete(user)
+        else:
+            return_data["status"] = "failed"
+            return_data["msg"] = "This user could not be found!"
+
+    db.session.commit()
+    return jsonify(return_data)
