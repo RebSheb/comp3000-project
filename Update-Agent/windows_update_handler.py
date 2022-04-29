@@ -64,3 +64,38 @@ class WindowsUpdater(UpdateHandler):
             })
 
         return app_data
+
+    def perform_update(self):
+        logging.info("WindowsUpdater-PerformUpdate - It's time to update!")
+        ps_update_command = """
+            #Search for relevant updates.
+
+            $Searcher = New-Object -ComObject Microsoft.Update.Searcher
+
+            $SearchResult = $Searcher.Search("IsInstalled=0").Updates
+
+
+            #Download updates.
+
+            $Session = New-Object -ComObject Microsoft.Update.Session
+
+            $Downloader = $Session.CreateUpdateDownloader()
+
+            $Downloader.Updates = $SearchResult
+
+            $Downloader.Download()
+
+
+            $Installer = New-Object -ComObject Microsoft.Update.Installer
+
+            $Installer.Updates = $SearchResult
+
+            $Result = $Installer.Install()
+
+            Write-Output $Result
+        """
+
+        update_result = subprocess.check_output(
+            ["powershell.exe", ps_update_command], universal_newlines=True)
+        logging.info(
+            "WindowsUpdater-PerformUpdate - Subprocess finished updates; result: {}".format(update_result))
