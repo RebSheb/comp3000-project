@@ -1,7 +1,5 @@
 from datetime import date
 import datetime
-from operator import and_
-from platform import mac_ver
 from flask import render_template, Blueprint, flash
 from flask_login import login_required
 from flask_login.utils import logout_user
@@ -21,7 +19,7 @@ from console.models import Device, DeviceUpdateDetails
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
 mac = MacLookup()
-# mac.update_vendors()
+mac.update_vendors()
 
 
 @auth_bp.route("/")
@@ -128,6 +126,12 @@ def network_scan():
         flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
 
     return clients
+
+
+@auth_bp.route("/admin/users")
+@login_required
+def user_management_console():
+    return render_template("user_management.jinja2")
 
 
 @auth_bp.route("/user/<user_id>/activate")
