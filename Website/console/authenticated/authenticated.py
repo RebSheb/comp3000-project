@@ -131,24 +131,41 @@ def network_scan():
 @auth_bp.route("/admin/users")
 @login_required
 def user_management_console():
-    users = User.query.with_entities(
-        User.username, User.name, User.active_account).all()
+    users = User.query.with_entities(User.id,
+                                     User.username, User.name, User.active_account).all()
     return render_template("user_management.jinja2", users=users)
 
 
-@auth_bp.route("/user/<user_id>/activate")
+@auth_bp.route("/admin/user/<user_id>/activate", methods=["POST"])
 @login_required
 def activate_user(user_id: int):
-    print("[User Management] - Request received to active user with ID: {}".format(id))
+    print("[User Management] - Request received to activate user with ID: {}".format(user_id))
+    user = User.query.get(user_id)
+    if user is not None:
+        user.active_account = True
+    else:
+        return "", 500
+    db.session.commit()
+    return "", 200
 
 
-@auth_bp.route("/user/<user_id>/deactivate")
+@auth_bp.route("/admin/user/<user_id>/deactivate", methods=["POST"])
 @login_required
 def deactivate_user(user_id: int):
-    print("[User Managmenet - Request received to deactivate user with ID: {}".format(id))
+    print("[User Management - Request received to deactivate user with ID: {}".format(user_id))
+    user = User.query.get(user_id)
+    if user is not None:
+        user.active_account = False
+    else:
+        return "", 500
+
+    db.session.commit()
+    return "", 200
 
 
-@auth_bp.route("/user/<user_id>/delete")
+@auth_bp.route("/admin/user/<user_id>/delete", methods=["POST"])
 @login_required
 def delete_user(user_id: int):
-    print("[User Management] - Request received to delete user with ID: {}".format(id))
+    print("[User Management] - Request received to delete user with ID: {}".format(user_id))
+    db.session.commit()
+    return "", 200
