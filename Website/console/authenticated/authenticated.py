@@ -128,3 +128,21 @@ def network_scan():
         flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
 
     return clients
+
+
+@auth_bp.route("/user/<user_id>/activate")
+@login_required
+def activate_user(user_id: int):
+    print("[User Management] - Request received to active user with ID: {}".format(id))
+
+
+@auth_bp.route("/user/<user_id>/deactivate")
+@login_required
+def deactivate_user(user_id: int):
+    print("[User Managmenet - Request received to deactivate user with ID: {}".format(id))
+
+
+@auth_bp.route("/user/<user_id>/delete")
+@login_required
+def delete_user(user_id: int):
+    print("[User Management] - Request received to delete user with ID: {}".format(id))
