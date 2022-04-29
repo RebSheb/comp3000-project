@@ -38,11 +38,11 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(1000))
     registered_on = db.Column(
         db.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    is_active = db.Column(db.Boolean, nullable=False)
+    active_account = db.Column(db.Boolean, nullable=False)
 
     @property
     def is_active(self):
-        return True
+        return self.active_account
 
     @property
     def is_authenticated(self):
@@ -57,7 +57,7 @@ class User(UserMixin, db.Model):
         self.password = bcrypt.generate_password_hash(password, 12)
         self.name = name
         self.registered_on = datetime.datetime.now()
-        self.is_active = is_active
+        self.active_account = is_active
 
     def __repr__(self):
         return "<User {}>".format(self.username)
