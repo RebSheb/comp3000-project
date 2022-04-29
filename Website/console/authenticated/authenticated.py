@@ -14,7 +14,7 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
-from console.models import Device, DeviceUpdateDetails
+from console.models import Device, DeviceUpdateDetails, User
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -131,7 +131,10 @@ def network_scan():
 @auth_bp.route("/admin/users")
 @login_required
 def user_management_console():
-    return render_template("user_management.jinja2")
+    # users = User.query.with_entities(
+    #   User.username, User.name, User.active_account).all()
+    users = []
+    return render_template("user_management.jinja2", users=users)
 
 
 @auth_bp.route("/user/<user_id>/activate")
