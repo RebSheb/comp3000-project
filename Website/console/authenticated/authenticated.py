@@ -154,6 +154,9 @@ def activate_user(user_id: int):
 def deactivate_user(user_id: int):
     print("[User Management - Request received to deactivate user with ID: {}".format(user_id))
     user = User.query.get(user_id)
+    activated_users = User.query.filter(User.active_account == True).all()
+    if len(activated_users) <= 1:
+        return "", 500
     if user is not None:
         user.active_account = False
     else:
