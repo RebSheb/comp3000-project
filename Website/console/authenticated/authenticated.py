@@ -131,9 +131,8 @@ def network_scan():
 @auth_bp.route("/admin/users")
 @login_required
 def user_management_console():
-    # users = User.query.with_entities(
-    #   User.username, User.name, User.active_account).all()
-    users = []
+    users = User.query.with_entities(
+        User.username, User.name, User.active_account).all()
     return render_template("user_management.jinja2", users=users)
 
 
