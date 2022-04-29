@@ -8,13 +8,22 @@ from console.models import User
 @app.before_first_request
 def create_admin_user():
     try:
-        user = User(
-            app.config["DEFAULT_USERNAME"], app.config["DEFAULT_USERPASS"], "Built-in Administrator", True)
-        db.session.add(user)
-        db.session.commit()
+        default_user_exists = User.query.filter_by(
+            name="Built-in Administrator").first()
+        if default_user_exists is None:
+            print("Initial admin user does not exist, creating...")
+            user = User(
+                app.config["DEFAULT_USERNAME"], app.config["DEFAULT_USERPASS"], "Built-in Administrator", True)
+            db.session.add(user)
+            db.session.commit()
+            print("Initial admin user created and committed to database...")
+        else:
+            print("Initial admin user already exists.")
+
     except Exception as err:
         db.session.rollback()
-        print("ERROR:", err)
+        print(err)
+        print("An unknown error occurred creating default administrator")
 
 
 @app.route("/login", methods=["GET"])
