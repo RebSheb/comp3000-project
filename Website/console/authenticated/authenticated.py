@@ -167,5 +167,12 @@ def deactivate_user(user_id: int):
 @login_required
 def delete_user(user_id: int):
     print("[User Management] - Request received to delete user with ID: {}".format(user_id))
+    if len(User.query.all()) >= 1:
+        return "", 500
+    user = User.query.get(user_id)
+    if user is not None:
+        db.session.delete(user)
+    else:
+        return "", 500
     db.session.commit()
     return "", 200
