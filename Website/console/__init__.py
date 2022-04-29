@@ -42,15 +42,4 @@ def create_app():
     def unauthorized_callback():
         return redirect("/login")
 
-    @app.before_first_request
-    def create_test_user():
-        try:
-            user = models.User(
-                app.config["DEFAULT_USERNAME"], app.config["DEFAULT_USERPASS"], "Built-in Administrator", True)
-            db.session.add(user)
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            return
-
     return app
