@@ -100,7 +100,8 @@
                 method: "POST",
                 body: "",
                 headers: {},
-            }).then(res => { console.log("Success"); });
+            }).then(res => res.json())
+            .then(data => { console.log("Success " + data.msg); });
         }
 
         function deleteUser(user_id)
@@ -109,7 +110,8 @@
                 method: "POST",
                 body: "",
                 headers: {},
-            }).then(res => { console.log("Success"); });
+            }).then(res => res.json())
+            .then(data => { console.log("Success " + data.msg); });
         }
     </script>
 </div>
