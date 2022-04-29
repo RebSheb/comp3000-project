@@ -1,6 +1,7 @@
 from datetime import date
 import datetime
-from flask import render_template, Blueprint, flash
+import json
+from flask import render_template, Blueprint, flash, jsonify
 from flask_login import login_required
 from flask_login.utils import logout_user
 import flask_sqlalchemy
@@ -139,43 +140,58 @@ def user_management_console():
 @auth_bp.route("/admin/user/<user_id>/activate", methods=["POST"])
 @login_required
 def activate_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully activated that user!"}
     print("[User Management] - Request received to activate user with ID: {}".format(user_id))
     user = User.query.get(user_id)
     if user is not None:
         user.active_account = True
     else:
-        return "", 500
+        return_data = {"status": "failed",
+                       "msg": "This user could not be found!"}
     db.session.commit()
-    return "", 200
+    return jsonify(return_data)
 
 
 @auth_bp.route("/admin/user/<user_id>/deactivate", methods=["POST"])
 @login_required
 def deactivate_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully deactivated that user!"}
     print("[User Management - Request received to deactivate user with ID: {}".format(user_id))
     user = User.query.get(user_id)
     activated_users = User.query.filter(User.active_account == True).all()
     if len(activated_users) <= 1:
-        return "", 500
-    if user is not None:
-        user.active_account = False
+        return_data = {"status": "failed",
+                       "msg": "At least one user must remain active at all times!"}
     else:
-        return "", 500
+        if user is not None:
+            user.active_account = False
+        else:
+            return_data = {"status": "failed",
+                           "msg": "This user could not be found!"}
 
     db.session.commit()
-    return "", 200
+    return jsonify(return_data)
 
 
 @auth_bp.route("/admin/user/<user_id>/delete", methods=["POST"])
 @login_required
 def delete_user(user_id: int):
+    return_data = {"status": "success",
+                   "msg": "Successfully deleted that user!"}
     print("[User Management] - Request received to delete user with ID: {}".format(user_id))
-    if len(User.query.all()) >= 1:
-        return "", 500
-    user = User.query.get(user_id)
-    if user is not None:
-        db.session.delete(user)
+    if len(User.query.all()) <= 1:
+        return_data["status"] = "failed"
+        return_data["msg"] = "You cannot delete the last existing user!"
+
     else:
-        return "", 500
+        user = User.query.get(user_id)
+        if user is not None:
+            db.session.delete(user)
+        else:
+            return_data["status"] = "failed"
+            return_data["msg"] = "This user could not be found!"
+
     db.session.commit()
-    return "", 200
+    return jsonify(return_data)
