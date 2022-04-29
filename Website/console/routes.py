@@ -5,6 +5,18 @@ from console import app, db, bcrypt
 from console.models import User
 
 
+@app.before_first_request
+def create_admin_user():
+    try:
+        user = User(
+            app.config["DEFAULT_USERNAME"], app.config["DEFAULT_USERPASS"], "Built-in Administrator", True)
+        db.session.add(user)
+        db.session.commit()
+    except Exception as err:
+        db.session.rollback()
+        print("ERROR:", err)
+
+
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.jinja2")
@@ -31,6 +43,7 @@ def do_login():
 @app.route("/register", methods=["GET"])
 def register():
     return render_template("register.jinja2")
+
 
 @app.route("/register", methods=["POST"])
 def do_register():
