@@ -26,7 +26,7 @@ def create_app():
 
     from .authenticated.authenticated import auth_bp
     from .api.api import api_bp
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, static_folder="static")
     app.register_blueprint(api_bp)
 
     from console import routes, models

@@ -21,7 +21,50 @@
 
                         <div id="dashboardExplainedContent" class="collapse" aria-labelledby="dashboardExplainedHeader" data-parent="#helpPageAccordion">
                             <div class="card-body">
-                                Some text to describe the use of the dashboard
+                                At first, the Dashboard may seem a little daunting with the random string of numbers and letters and Yes/No text written all over the place. 
+                                Fear not, that is why you are here and this is what this help section is for! Below will provide a breakdown of the sections of the Dashboard page.
+                                <div class="text-center">
+                                    <img src="{{url_for('static', filename='dashboard_explained.png')}}"/>
+                                </div>
+                                <p>
+                                1. This column represents the device MAC (Media Access Control) address. This is essentially a unique identifier for that device on your network and, in theory, should never change.
+                                </p>                                
+                                <p>
+                                2. The Hostname column represents the friendly network name, if applicable, for that device on the network. Every device on the network must have a hostname although there are some cases
+                                where LANMan cannot resolve this name and instead prints 'Unknown Hostname'. This doesn't necessarily indicate any issues with a device.
+                                </p>
+                                <p>
+                                3. This column represents IP addresses, something which you may have heard of before. An IP (Internet Protocol) address indicates the address of the device on your network and is used for sending data.
+                                A similar analogy would be to think of it as being like the physical address of a place/building; when mail and packages are addressed to it, they are delivered there. This works the same within your
+                                home network and devices send 'mail/packages' to one another using this address.
+                                </p>
+                                <p>
+                                4. The Agent Status column indicates whether or not the agent is installed on that device (or has been installed previously) and if it is possible to see updates status. If this field
+                                is 'No' and you would like to be able to view available updates, look into the 'How do I Install a Desktop Agent?' section on this page. 
+                                </p>
+                                <p>
+                                5. This final column shows the options available for that device. At the moment, there is only one option and that is to list 'Packages' for that device, if applicable. If there is no Agent installed,
+                                there will be 'No Options Available' displayed for that device.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" id="agentInstallHeader">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#agentInstallContent" aria-expanded="false" aria-controls="agentInstallContent">
+                                    How do I install a Desktop Agent?
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="agentInstallContent" class="collapse" aria-labelledby="agentInstallHeader" data-parent="#helpPageAccordion">
+                            <div class="card-body">
+                                El Texto
+                                <p>
+                                    Lorem Ipsum
+                                </p>                                
                             </div>
                         </div>
                     </div>
