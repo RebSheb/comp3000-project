@@ -16,6 +16,7 @@ from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
 from console.models import Device, DeviceUpdateDetails, User
+from console.routes import login
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -77,6 +78,12 @@ def about():
 def logout():
     logout_user()
     return redirect("/login")
+
+
+@auth_bp.route("/help")
+@login_required
+def help_page():
+    return render_template("help.jinja2")
 
 
 @auth_bp.route("/agent/<mac>/packages")
