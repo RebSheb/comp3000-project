@@ -64,8 +64,8 @@ def about():
         DeviceUpdateDetails.mac_address).all()
 
     total_applications = DeviceUpdateDetails.query.filter().all()
+    available_to_update = 0
     if total_applications != None and len(total_applications) > 0:
-        available_to_update = 0
         for pkg in total_applications:
             if len(pkg.latest_version) > 0:
                 available_to_update = available_to_update + 1
