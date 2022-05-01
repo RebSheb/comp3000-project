@@ -2,15 +2,33 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
+    <div class="col-1"></div>
+    <div class="col-10">
         <div class="card border-info p-3 mt-3">
             <div class="card-body">
                 <h5 class="card-title text-center">Welcome to the help page!</h5>
-                <p class="card-text">This page will contain all the information needed to use LANMan as smoothly as possible.</p>
+                <p class="card-text text-center">This page will contain all the information needed to use LANMan as smoothly as possible.</p>
+
+                <div class="accordion mb-3" id="helpPageAccordion">
+                    <div class="card">
+                        <div class="card-header" id="dashboardExplainedHeader">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#dashboardExplainedContent" aria-expanded="false" aria-controls="dashboardExplainedContent">
+                                    How do I understand the Dashboard?
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="dashboardExplainedContent" class="collapse" aria-labelledby="dashboardExplainedHeader" data-parent="#helpPageAccordion">
+                            <div class="card-body">
+                                Some text to describe the use of the dashboard
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-2"></div>
+    <div class="col-1"></div>
 </div>
 {% endblock %}
