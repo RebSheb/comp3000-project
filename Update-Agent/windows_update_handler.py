@@ -35,6 +35,7 @@ class WindowsUpdater(UpdateHandler):
 
         post_data = []
         for update in composite_list:
+            logging.info(update)
             post_data.append({
                 "PkgName": update[0],
                 "PkgDescription": update[1],
