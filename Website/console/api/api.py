@@ -57,6 +57,8 @@ def do_get_commands(mac: str):
 
 @app.route("/agent/<mac>/commands", methods=["POST"])
 def do_post_commands(mac: str):
+    return_data = {"status": "success",
+                   "msg": "Command to update device {} queued successfully".format(mac)}
     try:
         post_data = request.json
         device_command = DevicePollingCommands(
@@ -65,5 +67,7 @@ def do_post_commands(mac: str):
         db.session.commit()
     except Exception as err:
         print("Error occured pushing UPDATE command for {mac}".format(mac))
-        return "", 500
-    return "", 200
+        return_data["status"] = "failed"
+        return_data["msg"] = "Failed to queue update command for device, please try again later."
+
+    return jsonify(return_data)

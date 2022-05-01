@@ -79,7 +79,10 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-            }).then(res => { console.log("Success"); });
+            }).then(res => res.json())
+            .then(data => { 
+                showAlert(data.status, "Management", data.msg) 
+            });
         }
 
         function searchPackages() {
