@@ -35,6 +35,9 @@ def login():
 def do_login():
     try:
         user = User.query.filter_by(username=request.form["username"]).first()
+        if user is None:
+            flash("Please check your username / password!")
+            return redirect(url_for("login"))
 
         if not user.is_active:
             flash(
