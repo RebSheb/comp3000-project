@@ -3,13 +3,13 @@
 {% block content %}
 <div class="row">
     <div class="card-deck">
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-router"></i> Number of Devices</h5>
                     <p class="card-text">Discovered {{number_of_devices}} devices on your network ({{ip_range}})</p>
             </div>
         </div>
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-people"></i> Number of Agents</h5>
                     <p class="card-text">Out of {{number_of_devices}} devices, there are:</p>
@@ -19,13 +19,13 @@
                     {% endif %}
             </div>
         </div>
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-check-circle"></i> Applications</h5>
                     <p class="card-text">Tracking {{total_applications}} applications across {{number_of_devices}} devices.<br></br>{{available_to_update}} of these applications require an update.</p>
             </div>
         </div>
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-link"></i> Useful Links</h5>
                     <p class="card-text">Here are some useful links to project stuff:

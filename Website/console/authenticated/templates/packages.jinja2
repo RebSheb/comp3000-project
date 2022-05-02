@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-1"></div>
     <div class="col-12">
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -33,7 +33,7 @@
                     <button type="button" onclick="postUpdateCommand()" class="btn btn-success">Update Machine</button>
                     <a href="{{url_for('authenticated.about')}}" role="button" class="btn btn-primary">Update History</a>
 
-                    <input type="text" id="search_bar" class="form-control" placeholder="Search..." onkeyup="searchPackages()">
+                    <input type="text" id="search_bar" class="form-control mt-3 mb-3" placeholder="Search..." onkeyup="searchPackages()">
                 </p>
 
                 <table id="package_table" class="table table-striped">
