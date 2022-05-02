@@ -3,6 +3,7 @@ import logging
 import apt
 import netifaces
 import requests
+import json
 
 
 class LinuxUpdater(UpdateHandler):
@@ -32,6 +33,7 @@ class LinuxUpdater(UpdateHandler):
             mac = netifaces.ifaddresses("eth0")[netifaces.AF_LINK][0]["addr"]
             self.post_data(mac, upgradable_pkgs)
         except Exception as error:
+            print(error)
             logging.error(
                 "An error occured while attempting to check for updates, is an update in progress or is the agent ran as root?")
             return
