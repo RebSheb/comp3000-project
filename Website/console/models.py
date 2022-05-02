@@ -86,7 +86,7 @@ class DeviceLinuxUpdateDetails(db.Model):
 
 
 class DeviceWindowsUpdateDetails(db.Model):
-    __tablename__ = "device_linux_update_details"
+    __tablename__ = "device_windows_update_details"
 
     id = db.Column(db.Integer, primary_key=True)
     mac_address = db.Column(db.String(17), db.ForeignKey(
