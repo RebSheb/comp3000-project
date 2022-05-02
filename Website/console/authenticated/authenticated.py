@@ -108,7 +108,8 @@ def about():
         for pkg in total_windows_applications:
             if len(pkg.latest_version) > 0:
                 available_to_update = available_to_update + 1
-    return render_template("about.jinja2", number_of_devices=len(devices), ip_range=app.config["IP_RANGE"], number_of_agents=len(linux_agents) + len(windows_agents), total_applications=len(total_applications), available_to_update=available_to_update)
+
+    return render_template("about.jinja2", number_of_devices=len(devices), ip_range=app.config["IP_RANGE"], number_of_agents=len(linux_agents) + len(windows_agents), total_applications=len(total_linux_applications) + len(total_windows_applications), available_to_update=available_to_update)
 
 
 @auth_bp.route("/logout")
