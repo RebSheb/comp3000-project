@@ -24,13 +24,15 @@
                         <input name="password" type="password" class="form-control" id="inputPassword">
                     </div>
                     <a class="card-link">
-                        <button type="submit" class="btn btn-primary">Login</button>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <a class="card-link" href={{ url_for('register') }}>
+                                <button class="btn btn-secondary">Register</button>
+                            </a>
+                        </div>
                     </a>
                 </form>
-                <a class="card-link" href={{ url_for('register') }}>
-                    <button class="btn btn-secondary">Register</button>
-                </a>
-                <div class="card-footer text-muted">
+                <div class="mt-3 card-footer text-muted">
                     On large networks, logging in may take some time due to the network scan and MAC lookup. Please wait
                 </div>
             </div>
