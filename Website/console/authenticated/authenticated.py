@@ -146,40 +146,19 @@ def view_packages(mac):
         if packages != None and len(packages) > 0:
             available_to_update = 0
             for pkg in packages:
+                try:
+                    if pkg.is_installed == 0:
+                        available_to_update = available_to_update + 1
+                except KeyError:
+                    pass
+
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
+
             return render_template('packages.jinja2', mac=mac, host=hostname, packages=packages, pkg_count=(len(packages) - available_to_update), updates=available_to_update)
 
     flash("An error ocurred looking up that MAC")
     return render_template('packages.jinja2')
-
-
-def network_scan():
-    clients = []
-    try:
-        target_ip = app.config["IP_RANGE"]
-        arp = ARP(pdst=target_ip)
-        ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-        packet = ether/arp
-        result = srp(packet, timeout=1)[0]
-        clients = []
-        for sent, received in result:
-            try:
-                hostname = ""
-                (hostname, alias, ip) = gethostbyaddr(received.psrc)
-            except herror:
-                hostname = "Unknown Hostname"
-
-            clients.append(
-                {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
-
-        if len(clients) == 0:
-            flash("No devices found on network!")
-
-    except PermissionError as err:
-        flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
-
-    return clients
 
 
 @auth_bp.route("/admin/users")
@@ -248,3 +227,31 @@ def delete_user(user_id: int):
 
     db.session.commit()
     return jsonify(return_data)
+
+
+def network_scan():
+    clients = []
+    try:
+        target_ip = app.config["IP_RANGE"]
+        arp = ARP(pdst=target_ip)
+        ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+        packet = ether/arp
+        result = srp(packet, timeout=1)[0]
+        clients = []
+        for sent, received in result:
+            try:
+                hostname = ""
+                (hostname, alias, ip) = gethostbyaddr(received.psrc)
+            except herror:
+                hostname = "Unknown Hostname"
+
+            clients.append(
+                {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
+
+        if len(clients) == 0:
+            flash("No devices found on network!")
+
+    except PermissionError as err:
+        flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
+
+    return clients
