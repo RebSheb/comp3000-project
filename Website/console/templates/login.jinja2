@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
+    <div class="col-sm"></div>
+    <div class="col">
         <div class="card">
             <div class="card-body">
                 {% with messages = get_flashed_messages() %}
@@ -27,15 +27,15 @@
                         <button type="submit" class="btn btn-primary">Login</button>
                     </a>
                 </form>
-                <a class="card-link" href={{ url_for('register') }}>
+                <a class="card-link" href="{{ url_for('register') }}">
                     Do not have an account for this? Register here!
                 </a>
                 <div class="mt-3 card-footer text-muted">
-                    On large networks, logging in may take some time due to the network scan and MAC lookup. Please wait
+                    On large networks, logging in may take some time due to the network scan and MAC lookup. Please be patient :)
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-2"></div>
+    <div class="col-sm"></div>
 </div>
 {% endblock %}
