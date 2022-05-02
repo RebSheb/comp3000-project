@@ -3,25 +3,24 @@ from flask_login import login_required
 from flask_login.utils import logout_user
 from werkzeug.utils import redirect
 from console import app, db
-from console.models import DevicePollingCommands, DeviceUpdateDetails
-from sqlalchemy import and_
+from console.models import DevicePollingCommands, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails
 import json
 
 api_bp = Blueprint("api_bp", __name__)
 
 
-@app.route("/agent/post_data", methods=["POST"])
-def do_post_data():
+@app.route("/agent/linux_post_data", methods=["POST"])
+def do_linux_post_data():
     post_data = json.loads(request.json)
     try:
         for pkg in post_data["data"]:
-            existing_update_details = DeviceUpdateDetails.query.filter_by(
+            existing_update_details = DeviceLinuxUpdateDetails.query.filter_by(
                 mac_address=post_data["mac_address"].lower(),
                 package_name=pkg["PkgName"]
             ).first()
 
             if existing_update_details == None:  # Our mac_address and pkgName combo doesn't exist, let's add it
-                new_device_updates = DeviceUpdateDetails(
+                new_device_updates = DeviceLinuxUpdateDetails(
                     mac_address=post_data["mac_address"].lower(), pkgName=pkg["PkgName"],
                     pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"])
                 # Windows check
