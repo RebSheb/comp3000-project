@@ -73,17 +73,30 @@
                         <div class="card-header" id="packagesNotUpdatingHeader">
                             <h2 class="mb-0">
                                 <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#packagesNotUpdatingContent" aria-expanded="false" aria-controls="packagesNotUpdatingContent">
-                                    Why do my packages not update sometimes?
+                                    Why does my device not update sometimes?
                                 </button>
                             </h2>
                         </div>
 
                         <div id="packagesNotUpdatingContent" class="collapse" aria-labelledby="packagesNotUpdatingHeader" data-parent="#helpPageAccordion">
                             <div class="card-body">
-                                El Texto
+                                If you have your desktop agent installed on a device and on the LANMan web interface you click "Update Device", you would expect
+                                this to install all updates that are currently available for it. For some cases, this will not happen straight away or may require
+                                manual intervention on the device that is refusing to update.
+                                <div class="text-center">
+                                    <img src="{{url_for('static', filename='packages_not_updating_sample.png')}}"/>
+                                </div>
                                 <p>
-                                    Lorem Ipsum
-                                </p>                                
+                                    The above image displays packages that are associated to a Linux device. The packages in question that will not update related
+                                    to the core system of Linux, and in some cases, will requrie the user to manually update these or have the machine restart prior
+                                    these being able to update.
+                                </p>
+                                <p>
+                                    While this issue has not been observed directly on Windows machines, this does not exempt them from this possibility. By default, 
+                                    the installation of Windows Updates would require a device restart. If a device restart does not clear the Windows Updates from the
+                                    interface, there could be an issue on the device that was encountered when trying to install it and you should attempt to manually
+                                    install this.
+                                </p>
                             </div>
                         </div>
                     </div>
