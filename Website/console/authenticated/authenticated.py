@@ -16,7 +16,7 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
-from console.models import Device, DeviceUpdateDetails, User
+from console.models import Device, DeviceLinuxUpdateDetails, User
 from console.routes import login
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
@@ -49,8 +49,11 @@ def do_network_scan():
             existing_device.last_seen = datetime.datetime.utcnow()
 
         # To check if an agent is installed, we can simply perform a basic query against the deviceupdates table and check if an entry exists
-        has_agent = DeviceUpdateDetails.query.filter_by(
+        has_agent = DeviceLinuxUpdateDetails.query.filter_by(
             mac_address=device["mac"]).first()
+        if not has_agent:
+            has_agent = DeviceWindowsUpdateDetails.query.filter_by(
+                mac_address=device["mac"]).first()
         if has_agent:
             device["has_agent"] = "Installed"
         else:
