@@ -5,6 +5,7 @@ from base_classes import UpdateHandler
 from uuid import getnode as get_mac
 import subprocess
 import sys
+import requests
 
 
 class WindowsUpdater(UpdateHandler):
