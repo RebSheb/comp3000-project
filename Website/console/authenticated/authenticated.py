@@ -138,10 +138,13 @@ def view_packages(mac):
         windows_packages = DeviceWindowsUpdateDetails.query.filter(
             DeviceWindowsUpdateDetails.mac_address.like(mac)).order_by(DeviceWindowsUpdateDetails.latest_version.desc()).all()
 
-        if linux_packages == None:
+        print("Windows {}\nLinux {}".format(windows_packages, linux_packages))
+        if linux_packages == []:
             packages = windows_packages
         else:
             packages = linux_packages
+
+        print(packages)
 
         if packages != None and len(packages) > 0:
             available_to_update = 0
@@ -149,9 +152,9 @@ def view_packages(mac):
                 try:
                     if pkg.is_installed == 0:
                         available_to_update = available_to_update + 1
+                        continue
                 except KeyError:
                     pass
-
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
 
