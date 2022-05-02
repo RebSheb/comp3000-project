@@ -20,28 +20,37 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-primary navbar-expand-lg navbar-primary">
+    <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
         <a class="navbar-brand" href="{{ url_for('authenticated.home')}}">LANMan</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav mx-auto">                        
                 {% if current_user.is_authenticated %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('authenticated.about') }}">About</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('authenticated.logout') }}">Logout</a>
-                </li>
-                <span class="navbar-text">
-                    Hello, {{ current_user.name }}
-                </span>
+                    <li class="nav-item active">
+                        <a class="nav-link pr-5" href="{{ url_for('authenticated.home') }}">Devices Dashboard</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link pr-5" href="{{ url_for('authenticated.about') }}">About</a>
+                    </li>
 
-                
+                    <span class="navbar-text pr-5 pl-5 mr-5 ml-5">
+                        Hello, {{ current_user.name }}
+                    </span>
+
+                    <li class="nav-item active pl-5">
+                        <a class="nav-link" href="{{ url_for('authenticated.user_management_console') }}">User Management</a>
+                    </li>
+                    <li class="nav-item active pl-5">
+                        <a class="nav-link" href="{{ url_for('authenticated.help_page') }}">Help</a>
+                    </li>
                 {% endif %}
             </ul>
+            {% if current_user.is_authenticated %}
+                <a class="navbar-brand" href="{{ url_for('authenticated.logout') }}">Logout</a>
+            {% endif %}
         </div>
     </nav>
     <div class="container">
