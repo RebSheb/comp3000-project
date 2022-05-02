@@ -23,9 +23,7 @@ def do_linux_post_data():
                 new_device_updates = DeviceLinuxUpdateDetails(
                     mac_address=post_data["mac_address"].lower(), pkgName=pkg["PkgName"],
                     pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"])
-                # Windows check
-                if "PkgDescription" in pkg.keys():
-                    new_device_updates.description = pkg["PkgDescription"]
+
                 db.session.add(new_device_updates)
 
             else:  # Our package already exists, we need to compare versions to check if an update to the DB needs to be made
@@ -33,6 +31,18 @@ def do_linux_post_data():
                 existing_update_details.installed_version = pkg["PkgVersion"]
 
         db.session.commit()
+
+    except KeyError as err:
+        print(err)
+        return '', 202
+    return '', 200
+
+
+@app.route("/agent/windows_post_data", methods=["POST"])
+def do_windows_post_data():
+    post_data = json.loads(request.json)
+    try:
+        for pkg in post_data["data"]
 
     except KeyError as err:
         print(err)
