@@ -44,7 +44,7 @@ def do_login():
                 "This user is not yet active, please check with your LANMan administrator...")
             return redirect(url_for("login"))
 
-        if user is None or not bcrypt.check_password_hash(user.password, request.form["password"]):
+        if not bcrypt.check_password_hash(user.password, request.form["password"]):
             flash("Please check your username / password!")
             return redirect(url_for("login"))
 
