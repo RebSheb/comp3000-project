@@ -1,7 +1,8 @@
+from cgitb import html
 from datetime import date
 import datetime
 import json
-from flask import render_template, Blueprint, flash, jsonify
+from flask import render_template, Blueprint, flash, jsonify, url_for
 from flask_login import login_required
 from flask_login.utils import logout_user
 import flask_sqlalchemy
@@ -27,8 +28,16 @@ mac.update_vendors()
 @auth_bp.route("/")
 @login_required
 def home():
+    return render_template("dashboard.jinja2")
+
+
+@auth_bp.route("/device_scan")
+@login_required
+def do_network_scan():
+    html_output = ""
     devices = network_scan()
     for device in devices:
+
         # print("[Looking at] {} : {} : {}".format(
         #   device["mac"], device["ip"], device["hostname"]))
         new_device = Device(device["mac"], device["ip"], device["hostname"])
@@ -51,10 +60,27 @@ def home():
             device["tooltip"] = mac.lookup(device["mac"])
         except KeyError:
             device["tooltip"] = "Unknown Vendor"
+        html_output = html_output + "<tr>"
+        html_output = html_output + "<td data-toggle='tooltip' data-placement='top' title={tooltip}>{mac}</td>".format(
+            tooltip=device["tooltip"], mac=device["mac"])
+        html_output = html_output + \
+            "<td>{hostname}</td>".format(hostname=device["hostname"])
+        html_output = html_output + "<td>{ip}</td>".format(ip=device["ip"])
+        html_output = html_output + \
+            "<td>{has_agent}</td>".format(has_agent=device["has_agent"])
+        html_output = html_output + "<td>"
+        if device["has_agent"] == "Installed":
+            html_output = html_output + "<a href='" + \
+                url_for("authenticated.view_packages",
+                        mac=device["mac"]) + "' role='button' class='btn btn-primary'>Packages</a>"
+        else:
+            html_output = html_output + "No Options Available"
+
+        html_output = html_output + "</td>"
+        html_output = html_output + "</tr>"
 
     db.session.commit()
-
-    return render_template("dashboard.jinja2", devices=devices)
+    return html_output
 
 
 @auth_bp.route("/about")
