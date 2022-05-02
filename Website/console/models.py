@@ -1,5 +1,5 @@
 from console import db, bcrypt
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, desc
 from flask_login import UserMixin
 import datetime
 
@@ -63,8 +63,8 @@ class User(UserMixin, db.Model):
         return "<User {}>".format(self.username)
 
 
-class DeviceUpdateDetails(db.Model):
-    __tablename__ = "device_update_details"
+class DeviceLinuxUpdateDetails(db.Model):
+    __tablename__ = "device_linux_update_details"
 
     id = db.Column(db.Integer, primary_key=True)
     mac_address = db.Column(db.String(17), db.ForeignKey(
@@ -72,8 +72,6 @@ class DeviceUpdateDetails(db.Model):
     package_name = db.Column(db.String(128), nullable=False)
     installed_version = db.Column(db.String(64), nullable=False)
     latest_version = db.Column(db.String(64), nullable=False)
-    # Only applicable to Windows systems.
-    description = db.Column(db.String(1024), nullable=True)
 
     first_seen = db.Column(DateTime, nullable=False,
                            default=datetime.datetime.utcnow)
@@ -85,6 +83,32 @@ class DeviceUpdateDetails(db.Model):
         self.installed_version = pkgVersion
         self.latest_version = pkgLatest
         self.mac_address = mac_address
+
+
+class DeviceWindowsUpdateDetails(db.Model):
+    __tablename__ = "device_linux_update_details"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mac_address = db.Column(db.String(17), db.ForeignKey(
+        "devices.mac_address"), nullable=False)
+    package_name = db.Column(db.String(128), nullable=False)
+    installed_version = db.Column(db.String(64), nullable=False)
+    latest_version = db.Column(db.String(64), nullable=False)
+    is_installed = db.Column(db.Boolean, nullable=False)
+    description = db.Column(db.String(1000), nullable=True)
+
+    first_seen = db.Column(DateTime, nullable=False,
+                           default=datetime.datetime.utcnow)
+    updated_at = db.Column(DateTime, nullable=False,
+                           default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    def __init__(self, mac_address, pkgName, pkgVersion, pkgLatest, is_installed, description=None):
+        self.package_name = pkgName
+        self.installed_version = pkgVersion
+        self.latest_version = pkgLatest
+        self.mac_address = mac_address
+        self.is_installed = is_installed
+        self.description = description
 
 
 class DevicePollingCommands(db.Model):
