@@ -94,7 +94,7 @@ class DeviceWindowsUpdateDetails(db.Model):
     package_name = db.Column(db.String(128), nullable=False)
     installed_version = db.Column(db.String(64), nullable=False)
     latest_version = db.Column(db.String(64), nullable=False)
-    is_installed = db.Column(db.Boolean, nullable=False)
+    is_installed = db.Column(db.Boolean, nullable=True)
     description = db.Column(db.String(1000), nullable=True)
 
     first_seen = db.Column(DateTime, nullable=False,
