@@ -35,23 +35,26 @@ def login():
 def do_login():
     try:
         user = User.query.filter_by(username=request.form["username"]).first()
+
+        # Check if the user does not exist
         if user is None:
             flash("Please check your username / password!")
             return redirect(url_for("login"))
-
+        # Check if the user is not activated
         if not user.is_active:
             flash(
                 "This user is not yet active, please check with your LANMan administrator...")
             return redirect(url_for("login"))
-
+        # Check if the users password is correct
         if not bcrypt.check_password_hash(user.password, request.form["password"]):
             flash("Please check your username / password!")
             return redirect(url_for("login"))
 
+        # Finally attempt to log the user in
         if login_user(user):
             print("Successfully logged in {}".format(user.username))
             return redirect(url_for("authenticated.home"))
-
+    # Blank form handler
     except KeyError as err:
         flash("Please enter login details!")
         return redirect(url_for("login"))
