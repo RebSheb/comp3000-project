@@ -92,7 +92,7 @@ class DeviceWindowsUpdateDetails(db.Model):
     mac_address = db.Column(db.String(17), db.ForeignKey(
         "devices.mac_address"), nullable=False)
     package_name = db.Column(db.String(128), nullable=False)
-    installed_version = db.Column(db.String(64), nullable=False)
+    installed_version = db.Column(db.String(64), nullable=True)
     latest_version = db.Column(db.String(64), nullable=False)
     is_installed = db.Column(db.Boolean, nullable=True)
     description = db.Column(db.String(1000), nullable=True)
