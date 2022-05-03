@@ -6,6 +6,7 @@ from uuid import getnode as get_mac
 import subprocess
 import sys
 import requests
+import json
 
 
 class WindowsUpdater(UpdateHandler):
