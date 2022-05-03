@@ -16,7 +16,7 @@ from scapy.all import ARP, Ether, srp
 from socket import gethostbyaddr, herror
 from logging import log
 from console import app, db
-from console.models import Device, DeviceUpdateDetails, User
+from console.models import Device, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails, User
 from console.routes import login
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
@@ -49,8 +49,11 @@ def do_network_scan():
             existing_device.last_seen = datetime.datetime.utcnow()
 
         # To check if an agent is installed, we can simply perform a basic query against the deviceupdates table and check if an entry exists
-        has_agent = DeviceUpdateDetails.query.filter_by(
+        has_agent = DeviceLinuxUpdateDetails.query.filter_by(
             mac_address=device["mac"]).first()
+        if not has_agent:
+            has_agent = DeviceWindowsUpdateDetails.query.filter_by(
+                mac_address=device["mac"]).first()
         if has_agent:
             device["has_agent"] = "Installed"
         else:
@@ -87,16 +90,26 @@ def do_network_scan():
 @login_required
 def about():
     devices = Device.query.filter().all()
-    agents = DeviceUpdateDetails.query.filter().group_by(
-        DeviceUpdateDetails.mac_address).all()
+    linux_agents = DeviceLinuxUpdateDetails.query.filter().group_by(
+        DeviceLinuxUpdateDetails.mac_address).all()
+    windows_agents = DeviceWindowsUpdateDetails.query.filter().group_by(
+        DeviceWindowsUpdateDetails.mac_address).all()
 
-    total_applications = DeviceUpdateDetails.query.filter().all()
+    total_linux_applications = DeviceLinuxUpdateDetails.query.filter().all()
+    total_windows_applications = DeviceWindowsUpdateDetails.query.filter().all()
+
     available_to_update = 0
-    if total_applications != None and len(total_applications) > 0:
-        for pkg in total_applications:
+    if total_linux_applications != None and len(total_linux_applications) > 0:
+        for pkg in total_linux_applications:
             if len(pkg.latest_version) > 0:
                 available_to_update = available_to_update + 1
-    return render_template("about.jinja2", number_of_devices=len(devices), ip_range=app.config["IP_RANGE"], number_of_agents=len(agents), total_applications=len(total_applications), available_to_update=available_to_update)
+
+    if total_windows_applications != None and len(total_windows_applications) > 0:
+        for pkg in total_windows_applications:
+            if len(pkg.latest_version) > 0:
+                available_to_update = available_to_update + 1
+
+    return render_template("about.jinja2", number_of_devices=len(devices), ip_range=app.config["IP_RANGE"], number_of_agents=len(linux_agents) + len(windows_agents), total_applications=len(total_linux_applications) + len(total_windows_applications), available_to_update=available_to_update)
 
 
 @auth_bp.route("/logout")
@@ -119,47 +132,37 @@ def view_packages(mac):
         device = Device.query.filter(
             Device.mac_address.like(mac)).first()
         hostname = device.hostname
-        # packages = DeviceUpdateDetails.query.filter(and_(
-        #    DeviceUpdateDetails.mac_address.like(mac), ~func.coalesce(DeviceUpdateDetails.package_name, None))).order_by(DeviceUpdateDetails.package_name.asc()).all()
-        packages = DeviceUpdateDetails.query.filter(
-            DeviceUpdateDetails.mac_address.like(mac)).order_by(DeviceUpdateDetails.latest_version.desc()).all()
+        linux_packages = None
+        windows_packages = None
+        linux_packages = DeviceLinuxUpdateDetails.query.filter(
+            DeviceLinuxUpdateDetails.mac_address.like(mac)).order_by(DeviceLinuxUpdateDetails.latest_version.desc()).all()
+        windows_packages = DeviceWindowsUpdateDetails.query.filter(
+            DeviceWindowsUpdateDetails.mac_address.like(mac)).order_by(DeviceWindowsUpdateDetails.latest_version.desc()).all()
+
+        print("Windows {}\nLinux {}".format(windows_packages, linux_packages))
+        if linux_packages == []:
+            packages = windows_packages
+        else:
+            packages = linux_packages
+
+        print(packages)
+
         if packages != None and len(packages) > 0:
             available_to_update = 0
             for pkg in packages:
+                try:
+                    if pkg.is_installed == 0:
+                        available_to_update = available_to_update + 1
+                        continue
+                except KeyError:
+                    pass
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
+
             return render_template('packages.jinja2', mac=mac, host=hostname, packages=packages, pkg_count=(len(packages) - available_to_update), updates=available_to_update)
 
     flash("An error ocurred looking up that MAC")
     return render_template('packages.jinja2')
-
-
-def network_scan():
-    clients = []
-    try:
-        target_ip = app.config["IP_RANGE"]
-        arp = ARP(pdst=target_ip)
-        ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-        packet = ether/arp
-        result = srp(packet, timeout=1)[0]
-        clients = []
-        for sent, received in result:
-            try:
-                hostname = ""
-                (hostname, alias, ip) = gethostbyaddr(received.psrc)
-            except herror:
-                hostname = "Unknown Hostname"
-
-            clients.append(
-                {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
-
-        if len(clients) == 0:
-            flash("No devices found on network!")
-
-    except PermissionError as err:
-        flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
-
-    return clients
 
 
 @auth_bp.route("/admin/users")
@@ -228,3 +231,31 @@ def delete_user(user_id: int):
 
     db.session.commit()
     return jsonify(return_data)
+
+
+def network_scan():
+    clients = []
+    try:
+        target_ip = app.config["IP_RANGE"]
+        arp = ARP(pdst=target_ip)
+        ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+        packet = ether/arp
+        result = srp(packet, timeout=1)[0]
+        clients = []
+        for sent, received in result:
+            try:
+                hostname = ""
+                (hostname, alias, ip) = gethostbyaddr(received.psrc)
+            except herror:
+                hostname = "Unknown Hostname"
+
+            clients.append(
+                {'ip': received.psrc, 'mac': received.hwsrc, "hostname": hostname})
+
+        if len(clients) == 0:
+            flash("No devices found on network!")
+
+    except PermissionError as err:
+        flash("A PermissionError error occurred in LANMan! Is it running as root or does it have permission?")
+
+    return clients

@@ -1,35 +1,66 @@
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required
 from flask_login.utils import logout_user
+from sqlalchemy import desc
 from werkzeug.utils import redirect
 from console import app, db
-from console.models import DevicePollingCommands, DeviceUpdateDetails
-from sqlalchemy import and_
+from console.models import DevicePollingCommands, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails
 import json
 
 api_bp = Blueprint("api_bp", __name__)
 
 
-@app.route("/agent/post_data", methods=["POST"])
-def do_post_data():
+@app.route("/agent/linux_post_data", methods=["POST"])
+def do_linux_post_data():
     post_data = json.loads(request.json)
     try:
         for pkg in post_data["data"]:
-            existing_update_details = DeviceUpdateDetails.query.filter_by(
+            existing_update_details = DeviceLinuxUpdateDetails.query.filter_by(
                 mac_address=post_data["mac_address"].lower(),
                 package_name=pkg["PkgName"]
             ).first()
 
             if existing_update_details == None:  # Our mac_address and pkgName combo doesn't exist, let's add it
-                new_device_updates = DeviceUpdateDetails(
+                new_linux_device_updates = DeviceLinuxUpdateDetails(
                     mac_address=post_data["mac_address"].lower(), pkgName=pkg["PkgName"],
                     pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"])
-                # Windows check
-                if "PkgDescription" in pkg.keys():
-                    new_device_updates.description = pkg["PkgDescription"]
-                db.session.add(new_device_updates)
+
+                db.session.add(new_linux_device_updates)
 
             else:  # Our package already exists, we need to compare versions to check if an update to the DB needs to be made
+                existing_update_details.latest_version = pkg["PkgLatest"]
+                existing_update_details.installed_version = pkg["PkgVersion"]
+
+        db.session.commit()
+
+    except KeyError as err:
+        print(err)
+        return '', 202
+    return '', 200
+
+
+@app.route("/agent/windows_post_data", methods=["POST"])
+def do_windows_post_data():
+    post_data = json.loads(request.json)
+    try:
+        for pkg in post_data["data"]:
+            existing_update_details = DeviceWindowsUpdateDetails.query.filter_by(
+                mac_address=post_data["mac_address"].lower(),
+                package_name=pkg["PkgName"]
+            ).first()
+
+            if existing_update_details == None:
+                new_windows_device_updates = DeviceWindowsUpdateDetails(
+                    mac_address=post_data["mac_address"].lower(), pkgName=["PkgName"],
+                    pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"], is_installed=pkg["is_installed"],
+                    description=pkg["PkgDesc"]
+                )
+
+                db.session.add(new_windows_device_updates)
+            else:
+                if existing_update_details.is_installed != None:
+                    existing_update_details.is_installed = pkg["is_installed"]
+
                 existing_update_details.latest_version = pkg["PkgLatest"]
                 existing_update_details.installed_version = pkg["PkgVersion"]
 

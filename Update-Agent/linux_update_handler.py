@@ -2,6 +2,8 @@ from base_classes import UpdateHandler
 import logging
 import apt
 import netifaces
+import requests
+import json
 
 
 class LinuxUpdater(UpdateHandler):
@@ -31,6 +33,7 @@ class LinuxUpdater(UpdateHandler):
             mac = netifaces.ifaddresses("eth0")[netifaces.AF_LINK][0]["addr"]
             self.post_data(mac, upgradable_pkgs)
         except Exception as error:
+            print(error)
             logging.error(
                 "An error occured while attempting to check for updates, is an update in progress or is the agent ran as root?")
             return
@@ -44,3 +47,23 @@ class LinuxUpdater(UpdateHandler):
         logging.info("Upgrade finalizing; commiting to cache")
         cache.commit()
         logging.info("Upgrade complete")
+
+    def post_data(self, mac_address: str = None, data_to_post: list = None):
+        if data_to_post is None:
+            return ("Data to post is None!", False)
+        if mac_address is None:
+            return ("Mac Address is None!", False)
+
+        self.mac = mac_address
+        data = {
+            "mac_address": mac_address,
+            "data": data_to_post
+        }
+        data = json.dumps(data)
+        try:
+            if len(data_to_post) > 0:
+                requests.post(str(self.api_endpoint) + ":" +
+                              str(self.api_port) + "/agent/linux_post_data", json=data)
+        except Exception as error:
+            logging.error(error)
+            return (str(error), False)
