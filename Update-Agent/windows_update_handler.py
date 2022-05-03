@@ -37,19 +37,35 @@ class WindowsUpdater(UpdateHandler):
 
         post_data = []
         for update in composite_list:
-            logging.info(update)
-            post_data.append({
-                "PkgName": update[0],
-                "PkgDescription": update[1],
-                "PkgVersion": "",
-                "PkgLatest": update[2]
-            })
+            pkg_data = {"PkgName": None, "PkgDescription": None,
+                        "PkgVersion": None, "PkgLatest": None, "is_installed": 0}
+
+            pkg_data["PkgName"] = update[0]
+            try:
+                pkg_data["PkgDescription"] = update[1]
+            except IndexError:
+                logging.warn(
+                    "Update {} has no Description field!".format(update[0]))
+                pass
+
+            try:
+                pkg_data["PkgLatest"] = update[2]
+            except IndexError:
+                logging.warn(
+                    "Update {} has no Version field, substituting 1!".format(update[0]))
+                pkg_data["PkgLatest"] = "1"
+                pass
+
+            post_data.append(pkg_data)
 
         mac = get_mac()
         mac = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
         post_data = post_data + self.enumerate_installed_applications()
 
         self.post_data(mac.lower(), post_data)
+
+    def enumerate_installed_updates(self):
+        return []
 
     def enumerate_installed_applications(self):
         installed_apps = subprocess.check_output(
@@ -58,13 +74,12 @@ class WindowsUpdater(UpdateHandler):
 
         app_data = []
         for app in installed_apps:
+            pre_app_data = {"PkgName": None, "PkgDescription": None,
+                            "PkgVersion": None, "PkgLatest": "", "is_installed": None}
             app_info = app.split(",")
-            app_data.append({
-                "PkgName": app_info[0],
-                "PkgDescription": "",
-                "PkgVersion": app_info[1],
-                "PkgLatest": ""
-            })
+            pre_app_data["PkgName"] = app_info[0]
+            pre_app_data["PkgVersion"] = app_info[1]
+            app_data.append(pre_app_data)
 
         return app_data
 
