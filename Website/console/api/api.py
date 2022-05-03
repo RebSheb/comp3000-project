@@ -51,9 +51,9 @@ def do_windows_post_data():
 
             if existing_update_details == None:
                 new_windows_device_updates = DeviceWindowsUpdateDetails(
-                    mac_address=post_data["mac_address"].lower(), pkgName=["PkgName"],
+                    mac_address=post_data["mac_address"].lower(), pkgName=pkg["PkgName"],
                     pkgVersion=pkg["PkgVersion"], pkgLatest=pkg["PkgLatest"], is_installed=pkg["is_installed"],
-                    description=pkg["PkgDesc"]
+                    description=pkg["PkgDescription"]
                 )
 
                 db.session.add(new_windows_device_updates)
