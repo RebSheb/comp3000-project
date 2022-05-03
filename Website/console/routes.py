@@ -48,7 +48,7 @@ def do_login():
             flash("Please check your username / password!")
             return redirect(url_for("login"))
 
-        if user and login_user(user):
+        if login_user(user):
             print("Successfully logged in {}".format(user.username))
             return redirect(url_for("authenticated.home"))
 
