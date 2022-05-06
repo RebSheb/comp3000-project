@@ -67,3 +67,5 @@ class LinuxUpdater(UpdateHandler):
         except Exception as error:
             logging.error(error)
             return (str(error), False)
+
+# https://www.python.org/ftp/python/3.10.4/python-3.10.4-amd64.exe
