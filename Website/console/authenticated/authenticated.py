@@ -1,20 +1,19 @@
 from cgitb import html
 from datetime import date
 import datetime
-import json
-from flask import render_template, Blueprint, flash, jsonify, url_for
+from flask import render_template, Blueprint, flash, jsonify, url_for, request, send_from_directory
 from flask_login import login_required
 from flask_login.utils import logout_user
-import flask_sqlalchemy
-from sqlalchemy import func
 from werkzeug.utils import redirect
 from mac_vendor_lookup import MacLookup
-
+# Used for zipping up agent directory
+from shutil import make_archive
+from os import path
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
 # We need socket to resolve hostnames by address and herror for HostnameError
-from socket import gethostbyaddr, herror
-from logging import log
+from socket import gethostbyaddr, gethostbyname, gethostname, herror
+from logging import log, shutdown
 from console import app, db
 from console.models import Device, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails, User
 from console.routes import login
@@ -161,6 +160,18 @@ def view_packages(mac):
 
     flash("An error ocurred looking up that MAC")
     return render_template('packages.jinja2')
+
+
+@auth_bp.route("/agent/download", methods=["GET"])
+@login_required
+def download_agent():
+    agent_path = path.join(app.root_path, "../../")
+    # normpath resolves the ../ dir changes
+    agent_path = path.join(path.normpath(agent_path), "Update-Agent")
+    print(request.host)
+
+    make_archive("agent", format="zip", root_dir=agent_path)
+    return send_from_directory(directory=path.normpath(path.join(app.root_path, "..")), filename="agent.zip")
 
 
 @auth_bp.route("/admin/users")
