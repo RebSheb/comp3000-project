@@ -66,8 +66,56 @@
                                     To get started with the desktop agent, first it needs to be installed on the system you would like to be able to update. To download the agent, click on the following button:
                                     <a href="{{url_for('authenticated.download_agent')}}" class="btn btn-primary">Download</a>
                                 </p>
+                                <div class="card border border-primary px-3 mx-3">
+                                    <h3 class="text-center">For Windows</h2>
+                                    <p>
+                                        If you're a Windows user, if you follow these steps, the set-up process for installing the agent should be a breeze!
+                                    </p>
+                                    <p>
+                                        1. Once you've downloaded the agent using the above 'Download' button, you should have a zip file named 'download.zip'. If you extract this by right clicking on it
+                                        and clicking 'Extract All...'. In the pop-up Window, select the destination you would like the agent files to go and click 'Extract'.
+                                        <div class="text-center">
+                                            <img src="{{url_for('static', filename='agent_extractall.png')}}"/>
+                                            <img src="{{url_for('static', filename='agent_extractall2.png')}}"/>
+                                        </div>
+                                    </p>
+                                    <p>
+                                        2. Next, if you left the "Show extracted files when complete" checkbox ticked, you should now have a file list of the extracted agent files open. If you didn't leave it ticked,
+                                        navigate to the folder where you extracted the agent. Simply right-click on the "start.bat" file and click "Run As Administrator". (Administrator is required for the installation 
+                                        of Windows updates.). If you can't see "Run As Administrator" and you're running Windows 11, right-click the file, click "Show more options" and the option will be available there.
+                                        <div class="text-center">
+                                            <img src="{{url_for('static', filename='agent_runasadmin.png')}}"/>
+                                        </div>
 
-                                <h2 class="text-center">For Windows</h2>
+                                        <div class="alert alert-warning">
+                                            If when running the agent you get a black screen that flashes up and disappeares immediately, you need to install Python! Don't worry, it's super easy!
+                                            On the Microsoft Store, search for 'Python' and install either 'Python 3.9' or 'Python 3.10'. Once done, repeat step 2 again and it should work!
+                                        </div>
+
+                                        If successful, you should see black screen which looks a bit like the following. Do not close that Window but instead simply minimize it and carry on:
+                                        <div class="text-center">
+                                            <img src="{{url_for('static', filename='agent_running.png')}}"/>
+                                        </div>
+                                    </p>
+                                </div>
+                                
+                                <div class="card border border-primary px-3 mx-3">
+                                    <h3 class="text-center">For Linux</h2>
+                                    <p>
+                                        If you're a Linux user, if you follow these steps, the set-up process for installing the agent should be a breeze!
+                                    </p>
+                                    <p>
+                                        1. Once you've downloaded the agent using the above 'Download' button, you should have a zip file named 'download.zip'. If you extract this by right clicking on it
+                                        and click 'Extract Here'. This should produce a folder called "download" and the agent is contained within that folder.
+                                        <div class="text-center">
+                                            <img src="{{url_for('static', filename='agent_ubuntu_extract.png')}}"/>
+                                        </div>
+                                    </p>
+
+                                    <p>
+                                        
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
