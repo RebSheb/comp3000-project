@@ -35,3 +35,8 @@ To get setup with LANMan on Windows, you need to perform the following steps:
 - DEFALT_USERPASS -- This is the associated password for the DEFAULT_USERNAME field above.
 
 3. Once you have configured the config.py file, right click on 'start.ps1' file and click *Run as Administrator* and then LANMan will start.
+
+# Linux Set-Up
+
+1. Follow Steps 1 and 2 from Windows Set-Up.
+2. Once you have configured the config.py file, either using the terminal or by right clicking the 'start.sh' file, run this as sudo as it requires access to packet-capturing functions of the OS.
