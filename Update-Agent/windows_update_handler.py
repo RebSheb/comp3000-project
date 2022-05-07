@@ -62,12 +62,57 @@ class WindowsUpdater(UpdateHandler):
 
         mac = get_mac()
         mac = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
-        post_data = post_data + self.enumerate_installed_applications()
+        post_data = post_data + self.enumerate_installed_applications() + \
+            self.enumerate_installed_updates()
 
         self.post_data(mac.lower(), post_data)
 
     def enumerate_installed_updates(self):
-        return []
+        logging.info("WindowsUpdater-EnumerateInstalledUpdates")
+        powershell_output = subprocess.check_output(
+            ["powershell.exe",
+                """$UpdateSession = New-Object -ComObject Microsoft.Update.Session;
+                 $UpdateSearcher = $UpdateSession.CreateupdateSearcher();
+                 $Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=1').Updates);
+                 $Updates | ForEach-Object -Begin $null -Process { $_.Title ; $_.Description ; $_.KBArticleIDs }"""
+             ],
+            universal_newlines=True, creationflags=subprocess.SW_HIDE)
+
+        # Remove Windows return carriages and split into a list from \n's
+        # stdout = stdout.strip("\r").split("\n")
+        powershell_output = powershell_output.strip("\r").split("\n")
+        # Remove the erronous newline which Powershell seems to enjoy putting in
+        # stdout = stdout[:-1]
+        powershell_output = powershell_output[:-1]
+        # Split every 3rd element so we get a list of lists for each update
+        # composite_list = [stdout[x:x+3] for x in range(0, len(stdout), 3)]
+        composite_list = [powershell_output[x:x+3]
+                          for x in range(0, len(powershell_output), 3)]
+
+        post_data = []
+        for update in composite_list:
+            pkg_data = {"PkgName": None, "PkgDescription": None,
+                        "PkgVersion": None, "PkgLatest": "", "is_installed": 1}
+
+            pkg_data["PkgName"] = update[0]
+            try:
+                pkg_data["PkgDescription"] = update[1]
+            except IndexError:
+                logging.warn(
+                    "Update {} has no Description field!".format(update[0]))
+                pass
+
+            try:
+                pkg_data["PkgVersion"] = update[2]
+            except IndexError:
+                logging.warn(
+                    "Update {} has no Version field, substituting 1!".format(update[0]))
+                pkg_data["PkgVersion"] = "1"
+                pass
+
+            post_data.append(pkg_data)
+        logging.info("WindowsUpdater-EnumerateInstalledUpdates finished")
+        return post_data
 
     def enumerate_installed_applications(self):
         installed_apps = subprocess.check_output(
