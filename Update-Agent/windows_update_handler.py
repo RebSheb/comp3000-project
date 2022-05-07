@@ -24,7 +24,7 @@ class WindowsUpdater(UpdateHandler):
                  $Updates = @($UpdateSearcher.Search('IsHidden=0 and IsInstalled=0').Updates);
                  $Updates | ForEach-Object -Begin $null -Process { $_.Title ; $_.Description ; $_.KBArticleIDs }"""
              ],
-            universal_newlines=True)
+            universal_newlines=True, creationflags=subprocess.SW_HIDE, shell=True)
 
         # Remove Windows return carriages and split into a list from \n's
         # stdout = stdout.strip("\r").split("\n")
@@ -71,7 +71,7 @@ class WindowsUpdater(UpdateHandler):
 
     def enumerate_installed_applications(self):
         installed_apps = subprocess.check_output(
-            ["powershell.exe", "foreach($pkg in (Get-WmiObject -Class Win32_Product | Select-Object Name,Version)) { if ($pkg.Name) {$pkg.Name + ',' +  $pkg.Version} }"], universal_newlines=True)
+            ["powershell.exe", "foreach($pkg in (Get-WmiObject -Class Win32_Product | Select-Object Name,Version)) { if ($pkg.Name) {$pkg.Name + ',' +  $pkg.Version} }"], universal_newlines=True, creationflags=subprocess.SW_HIDE, shell=True)
         installed_apps = installed_apps.split("\n")[:-1]
 
         app_data = []
@@ -116,7 +116,7 @@ class WindowsUpdater(UpdateHandler):
         """
 
         update_result = subprocess.check_output(
-            ["powershell.exe", ps_update_command], universal_newlines=True)
+            ["powershell.exe", ps_update_command], universal_newlines=True, creationflags=subprocess.SW_HIDE, shell=True)
         logging.info(
             "WindowsUpdater-PerformUpdate - Subprocess finished updates; result: {}".format(update_result))
 
