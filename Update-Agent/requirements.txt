@@ -1,0 +1,4 @@
+requests
+netifaces
+configparser
+apt
