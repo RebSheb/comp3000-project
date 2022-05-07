@@ -132,7 +132,11 @@ def view_packages(mac):
     if mac != None:
         device = Device.query.filter(
             Device.mac_address.like(mac)).first()
-        hostname = device.hostname
+        try:
+            hostname = device.hostname
+        except AttributeError as err:
+            hostname = "Unknown Hostname"
+
         linux_packages = None
         windows_packages = None
         linux_packages = DeviceLinuxUpdateDetails.query.filter(
