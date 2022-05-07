@@ -61,10 +61,11 @@
 
                         <div id="agentInstallContent" class="collapse" aria-labelledby="agentInstallHeader" data-parent="#helpPageAccordion">
                             <div class="card-body">
-                                El Texto
+                                The desktop agent is a secondary component that compliments the functionality of LANMan by allowing you to update your system. 
                                 <p>
-                                    Lorem Ipsum
-                                </p>                                
+                                    To get started with the desktop agent, first it needs to be installed on the system you would like to be able to update. To download the agent, click on the following button:
+                                    <a href="{{url_for('authenticated.download_agent')}}" class="btn btn-primary">Download</a>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -80,7 +81,7 @@
 
                         <div id="packagesNotUpdatingContent" class="collapse" aria-labelledby="packagesNotUpdatingHeader" data-parent="#helpPageAccordion">
                             <div class="card-body">
-                                If you have your desktop agent installed on a device and on the LANMan web interface you click "Update Device", you would expect
+                                If you have a desktop agent installed on a device and on the LANMan web interface you click "Update Device", you would expect
                                 this to install all updates that are currently available for it. For some cases, this will not happen straight away or may require
                                 manual intervention on the device that is refusing to update.
                                 <div class="text-center">
