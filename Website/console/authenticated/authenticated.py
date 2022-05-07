@@ -152,13 +152,10 @@ def view_packages(mac):
         if packages != None and len(packages) > 0:
             available_to_update = 0
             for pkg in packages:
-                try:
-                    if type(pkg) == DeviceWindowsUpdateDetails:
-                        if pkg.is_installed == 0:
-                            available_to_update = available_to_update + 1
-                            continue
-                except KeyError:
-                    pass
+                if type(pkg) == DeviceWindowsUpdateDetails:
+                    if pkg.is_installed == 0:
+                        available_to_update = available_to_update + 1
+                        continue
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
 
