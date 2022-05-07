@@ -9,6 +9,7 @@ from mac_vendor_lookup import MacLookup
 # Used for zipping up agent directory
 from shutil import make_archive
 from os import path
+from string import Template
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
 # We need socket to resolve hostnames by address and herror for HostnameError
@@ -17,6 +18,7 @@ from logging import log, shutdown
 from console import app, db
 from console.models import Device, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails, User
 from console.routes import login
+
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -162,13 +164,28 @@ def view_packages(mac):
     return render_template('packages.jinja2')
 
 
-@auth_bp.route("/agent/download", methods=["GET"])
+@auth_bp.route("/agent/download")
 @login_required
 def download_agent():
     agent_path = path.join(app.root_path, "../../")
     # normpath resolves the ../ dir changes
     agent_path = path.join(path.normpath(agent_path), "Update-Agent")
     print(request.host)
+    lanman_host = request.host.split(":")[0]
+    try:
+        lanman_port = request.host.split(":")[1]
+    except:
+        lanman_port = 80
+
+    agent_values = {
+        "LANMAN_HOST": lanman_host,
+        "LANMAN_PORT": lanman_port
+    }
+    with open(agent_path + "/agent.conf.template", "r") as agent_conf:
+        conf_src = Template(agent_conf.read())
+        conf = conf_src.substitute(agent_values)
+        with open(agent_path + "/agent.conf", "w") as real_conf:
+            real_conf.write(conf)
 
     make_archive("agent", format="zip", root_dir=agent_path)
     return send_from_directory(directory=path.normpath(path.join(app.root_path, "..")), filename="agent.zip")
