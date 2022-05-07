@@ -116,7 +116,7 @@ class WindowsUpdater(UpdateHandler):
         """
 
         update_result = subprocess.check_output(
-            ["powershell.exe", ps_update_command], universal_newlines=True, creationflags=subprocess.SW_HIDE, shell=True)
+            ["powershell.exe", ps_update_command], universal_newlines=True)
         logging.info(
             "WindowsUpdater-PerformUpdate - Subprocess finished updates; result: {}".format(update_result))
 
