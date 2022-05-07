@@ -57,7 +57,7 @@
                                     <td>{{package.installed_version}}</td>
                                 {% endif %}
 
-                                {% if package.latest_version == "" %}
+                                {% if package.latest_version == "" or package.is_installed == True %}
                                     <td>{{package.installed_version }}</td>
                                     <td class="text-success">No</td>
                                 {% else %}
