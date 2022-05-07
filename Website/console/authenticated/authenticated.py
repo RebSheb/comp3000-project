@@ -1,23 +1,24 @@
 from cgitb import html
 from datetime import date
 import datetime
-import json
-from flask import render_template, Blueprint, flash, jsonify, url_for
+from flask import render_template, Blueprint, flash, jsonify, url_for, request, send_from_directory
 from flask_login import login_required
 from flask_login.utils import logout_user
-import flask_sqlalchemy
-from sqlalchemy import func
 from werkzeug.utils import redirect
 from mac_vendor_lookup import MacLookup
-
+# Used for zipping up agent directory
+from shutil import make_archive
+from os import path
+from string import Template
 # We need ARP (Address Resolution Protocol) to discover devices on our network
 from scapy.all import ARP, Ether, srp
 # We need socket to resolve hostnames by address and herror for HostnameError
-from socket import gethostbyaddr, herror
-from logging import log
+from socket import gethostbyaddr, gethostbyname, gethostname, herror
+from logging import log, shutdown
 from console import app, db
 from console.models import Device, DeviceLinuxUpdateDetails, DeviceWindowsUpdateDetails, User
 from console.routes import login
+
 
 auth_bp = Blueprint("authenticated", __name__, template_folder="templates")
 
@@ -131,7 +132,11 @@ def view_packages(mac):
     if mac != None:
         device = Device.query.filter(
             Device.mac_address.like(mac)).first()
-        hostname = device.hostname
+        try:
+            hostname = device.hostname
+        except AttributeError as err:
+            hostname = "Unknown Hostname"
+
         linux_packages = None
         windows_packages = None
         linux_packages = DeviceLinuxUpdateDetails.query.filter(
@@ -147,13 +152,10 @@ def view_packages(mac):
         if packages != None and len(packages) > 0:
             available_to_update = 0
             for pkg in packages:
-                try:
-                    if type(pkg) == DeviceWindowsUpdateDetails:
-                        if pkg.is_installed == 0:
-                            available_to_update = available_to_update + 1
-                            continue
-                except KeyError:
-                    pass
+                if type(pkg) == DeviceWindowsUpdateDetails:
+                    if pkg.is_installed == 0:
+                        available_to_update = available_to_update + 1
+                        continue
                 if len(pkg.latest_version) > 0:
                     available_to_update = available_to_update + 1
 
@@ -161,6 +163,33 @@ def view_packages(mac):
 
     flash("An error ocurred looking up that MAC")
     return render_template('packages.jinja2')
+
+
+@auth_bp.route("/agent/download")
+@login_required
+def download_agent():
+    agent_path = path.join(app.root_path, "../../")
+    # normpath resolves the ../ dir changes
+    agent_path = path.join(path.normpath(agent_path), "Update-Agent")
+    print(request.host)
+    lanman_host = request.host.split(":")[0]
+    try:
+        lanman_port = request.host.split(":")[1]
+    except:
+        lanman_port = 80
+
+    agent_values = {
+        "LANMAN_HOST": lanman_host,
+        "LANMAN_PORT": lanman_port
+    }
+    with open(agent_path + "/agent.conf.template", "r") as agent_conf:
+        conf_src = Template(agent_conf.read())
+        conf = conf_src.substitute(agent_values)
+        with open(agent_path + "/agent.conf", "w") as real_conf:
+            real_conf.write(conf)
+
+    make_archive("agent", format="zip", root_dir=agent_path)
+    return send_from_directory(directory=path.normpath(path.join(app.root_path, "..")), filename="agent.zip")
 
 
 @auth_bp.route("/admin/users")

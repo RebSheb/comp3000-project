@@ -30,7 +30,13 @@ class LinuxUpdater(UpdateHandler):
                         upgradable_pkgs.append(
                             {"PkgName": pkg.name, "PkgVersion": pkg.installed.version, "PkgLatest": ""})
 
-            mac = netifaces.ifaddresses("eth0")[netifaces.AF_LINK][0]["addr"]
+            try:
+                mac = netifaces.ifaddresses(
+                    "eth0")[netifaces.AF_LINK][0]["addr"]
+            except ValueError as err:
+                mac = netifaces.ifaddresses(
+                    "ens33")[netifaces.AF_LINK][0]["addr"]
+
             self.post_data(mac, upgradable_pkgs)
         except Exception as error:
             print(error)
@@ -67,3 +73,5 @@ class LinuxUpdater(UpdateHandler):
         except Exception as error:
             logging.error(error)
             return (str(error), False)
+
+# https://www.python.org/ftp/python/3.10.4/python-3.10.4-amd64.exe

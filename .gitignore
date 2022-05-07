@@ -137,3 +137,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 Website/console/db.db
+Website/agent.zip
