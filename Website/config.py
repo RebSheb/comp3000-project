@@ -1,12 +1,12 @@
-TESTING = True
-DEBUG = True
-FLASK_ENV = "development"
+TESTING = False
+DEBUG = False
+FLASK_ENV = "production"
 SECRET_KEY = "dklgjsdgiogreg9hry904u09euy09eu9ty43uj9i6uj4w8963wp89g64739p8"
 SQLALCHEMY_DATABASE_URI = "sqlite:///db.db"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-IP_RANGE = "192.168.1.33/28"
+IP_RANGE = "192.168.1.0/24"
 
 DEFAULT_USERNAME = "admin"
 DEFAULT_USERPASS = "admin"
